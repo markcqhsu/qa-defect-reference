@@ -18,15 +18,11 @@
       --gray-200: #e2e6ec;
       --gray-400: #8a98ab;
       --gray-600: #4a5568;
-      --danger: #e05252;
-      --success: #38b28a;
       --card-shadow: 0 4px 20px rgba(0,0,0,0.08);
       --card-hover-shadow: 0 12px 40px rgba(0,0,0,0.18);
       --transition: 0.22s cubic-bezier(0.4,0,0.2,1);
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
       background: var(--gray-100);
@@ -42,7 +38,6 @@
       z-index: 100;
       box-shadow: 0 4px 24px rgba(0,0,0,0.3);
     }
-
     .header-top {
       display: flex;
       align-items: center;
@@ -51,312 +46,209 @@
       border-bottom: 1px solid rgba(255,255,255,0.06);
       gap: 1rem;
     }
-
     .header-left {
       display: flex;
       align-items: center;
       gap: 0.9rem;
       min-width: 0;
     }
-
     .header-icon {
-      width: 42px;
-      height: 42px;
+      width: 42px; height: 42px;
       background: var(--accent);
       border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
     }
-
-    .header-icon svg {
-      width: 24px;
-      height: 24px;
-      fill: var(--navy);
-    }
-
+    .header-icon svg { width: 24px; height: 24px; fill: var(--navy); }
     .header-titles h1 {
-      font-size: 1.25rem;
-      font-weight: 900;
-      color: var(--white);
-      letter-spacing: 0.04em;
-      white-space: nowrap;
+      font-size: 1.25rem; font-weight: 900;
+      color: var(--white); letter-spacing: 0.04em; white-space: nowrap;
     }
-
     .header-titles h2 {
-      font-size: 0.72rem;
-      font-weight: 400;
-      color: var(--gray-400);
-      letter-spacing: 0.06em;
-      margin-top: 2px;
+      font-size: 0.72rem; font-weight: 400;
+      color: var(--gray-400); letter-spacing: 0.06em; margin-top: 2px;
     }
-
+    .header-right { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
     .header-badge {
-      background: var(--accent);
-      color: var(--navy);
-      font-size: 0.7rem;
-      font-weight: 700;
-      padding: 0.25rem 0.7rem;
-      border-radius: 99px;
-      letter-spacing: 0.05em;
-      white-space: nowrap;
-      flex-shrink: 0;
+      background: var(--accent); color: var(--navy);
+      font-size: 0.7rem; font-weight: 700;
+      padding: 0.25rem 0.7rem; border-radius: 99px;
+      letter-spacing: 0.05em; white-space: nowrap;
     }
-
-    .header-search {
-      padding: 0.65rem 1.5rem 0.8rem;
+    .version-badge {
+      background: rgba(255,255,255,0.12); color: var(--gray-400);
+      font-size: 0.65rem; font-weight: 600;
+      padding: 0.2rem 0.6rem; border-radius: 99px;
+      letter-spacing: 0.04em; white-space: nowrap;
+      border: 1px solid rgba(255,255,255,0.15);
     }
-
-    .search-wrap {
-      position: relative;
-      max-width: 540px;
-      margin: 0 auto;
-    }
-
+    .header-search { padding: 0.65rem 1.5rem 0.8rem; }
+    .search-wrap { position: relative; max-width: 540px; margin: 0 auto; }
     .search-icon {
-      position: absolute;
-      left: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--gray-400);
-      font-size: 1rem;
-      pointer-events: none;
+      position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+      color: var(--gray-400); font-size: 1rem; pointer-events: none;
     }
-
+    .search-clear {
+      position: absolute; right: 0.9rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: var(--gray-400); font-size: 1.1rem; line-height: 1;
+      display: none; padding: 0.2rem;
+    }
+    .search-clear.show { display: block; }
     #searchInput {
-      width: 100%;
-      padding: 0.65rem 1rem 0.65rem 2.8rem;
-      border-radius: 8px;
-      border: 1.5px solid rgba(255,255,255,0.1);
-      background: rgba(255,255,255,0.08);
-      color: var(--white);
-      font-size: 0.95rem;
-      font-family: inherit;
+      width: 100%; padding: 0.65rem 2.4rem 0.65rem 2.8rem;
+      border-radius: 8px; border: 1.5px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.08); color: var(--white);
+      font-size: 0.95rem; font-family: inherit;
       transition: border-color var(--transition), background var(--transition);
       outline: none;
     }
-
     #searchInput::placeholder { color: var(--gray-400); }
+    #searchInput:focus { border-color: var(--accent); background: rgba(255,255,255,0.12); }
 
-    #searchInput:focus {
-      border-color: var(--accent);
-      background: rgba(255,255,255,0.12);
-    }
-
-    /* ─── HERO STATS ─── */
+    /* ─── STATS ─── */
     .stats-bar {
-      display: flex;
-      justify-content: center;
-      gap: 2rem;
-      padding: 1.5rem 1.5rem 0.5rem;
-      flex-wrap: wrap;
+      display: flex; justify-content: center; gap: 2rem;
+      padding: 1.5rem 1.5rem 0.5rem; flex-wrap: wrap;
     }
+    .stat-item { text-align: center; }
+    .stat-num { font-size: 2rem; font-weight: 900; color: var(--accent); line-height: 1; }
+    .stat-label { font-size: 0.72rem; color: var(--gray-600); margin-top: 0.2rem; letter-spacing: 0.05em; }
 
-    .stat-item {
-      text-align: center;
-    }
-
-    .stat-num {
-      font-size: 2rem;
-      font-weight: 900;
-      color: var(--accent);
-      line-height: 1;
-    }
-
-    .stat-label {
-      font-size: 0.72rem;
-      color: var(--gray-600);
-      margin-top: 0.2rem;
-      letter-spacing: 0.05em;
-    }
-
-    /* ─── MAIN CONTENT ─── */
-    main {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 1.5rem 1rem 3rem;
-    }
-
+    /* ─── MAIN ─── */
+    main { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
     .section-title {
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: var(--gray-400);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin-bottom: 1rem;
-      padding-left: 0.2rem;
+      font-size: 0.78rem; font-weight: 700; color: var(--gray-400);
+      letter-spacing: 0.12em; text-transform: uppercase;
+      margin-bottom: 1rem; padding-left: 0.2rem;
     }
 
-    /* ─── GRID ─── */
+    /* ─── PRODUCT GRID ─── */
     .product-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 1.25rem;
     }
-
-    @media (max-width: 900px) {
-      .product-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-
+    @media (max-width: 900px) { .product-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 560px) {
       .product-grid { grid-template-columns: 1fr; }
       .stats-bar { gap: 1.2rem; }
       .stat-num { font-size: 1.6rem; }
-      .header-titles h1 { font-size: 1.05rem; }
+      .header-titles h1 { font-size: 1rem; }
+      .version-badge { display: none; }
     }
 
-    /* ─── PRODUCT CARD ─── */
     .product-card {
-      background: var(--white);
-      border-radius: 16px;
-      box-shadow: var(--card-shadow);
-      overflow: hidden;
+      background: var(--white); border-radius: 16px;
+      box-shadow: var(--card-shadow); overflow: hidden;
       transition: transform var(--transition), box-shadow var(--transition);
-      display: flex;
-      flex-direction: column;
+      display: flex; flex-direction: column;
       border: 1.5px solid transparent;
-      cursor: pointer;
-      text-decoration: none;
+      cursor: pointer; text-decoration: none;
     }
-
     .product-card:hover {
       transform: translateY(-4px);
       box-shadow: var(--card-hover-shadow);
       border-color: var(--accent);
     }
-
-    .product-card.hidden { display: none; }
-
     .card-header {
       padding: 1.4rem 1.4rem 1rem;
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 0.75rem;
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem;
     }
-
     .card-icon-wrap {
-      width: 52px;
-      height: 52px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      font-size: 1.6rem;
+      width: 52px; height: 52px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 1.6rem;
     }
-
     .card-count-badge {
-      background: var(--accent-dim);
-      color: var(--accent);
-      font-size: 0.68rem;
-      font-weight: 700;
-      padding: 0.2rem 0.6rem;
-      border-radius: 99px;
-      letter-spacing: 0.04em;
-      white-space: nowrap;
-      margin-top: 0.2rem;
+      background: var(--accent-dim); color: var(--accent);
+      font-size: 0.68rem; font-weight: 700;
+      padding: 0.2rem 0.6rem; border-radius: 99px;
+      letter-spacing: 0.04em; white-space: nowrap; margin-top: 0.2rem;
     }
-
-    .card-body {
-      padding: 0 1.4rem 1.2rem;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .card-title {
-      font-size: 1.2rem;
-      font-weight: 900;
-      color: var(--navy);
-      letter-spacing: 0.02em;
-      margin-bottom: 0.4rem;
-    }
-
-    .card-subtitle {
-      font-size: 0.72rem;
-      color: var(--gray-400);
-      letter-spacing: 0.05em;
-      margin-bottom: 0.9rem;
-    }
-
-    .card-desc {
-      font-size: 0.82rem;
-      color: var(--gray-600);
-      line-height: 1.6;
-      flex: 1;
-    }
-
+    .card-body { padding: 0 1.4rem 1.2rem; flex: 1; display: flex; flex-direction: column; }
+    .card-title { font-size: 1.2rem; font-weight: 900; color: var(--navy); letter-spacing: 0.02em; margin-bottom: 0.4rem; }
+    .card-subtitle { font-size: 0.72rem; color: var(--gray-400); letter-spacing: 0.05em; margin-bottom: 0.9rem; }
+    .card-desc { font-size: 0.82rem; color: var(--gray-600); line-height: 1.6; flex: 1; }
     .card-footer {
       padding: 1rem 1.4rem 1.3rem;
       border-top: 1px solid var(--gray-200);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      display: flex; align-items: center; justify-content: space-between;
     }
-
-    .card-tags {
-      display: flex;
-      gap: 0.4rem;
-      flex-wrap: wrap;
-    }
-
-    .tag {
-      font-size: 0.65rem;
-      font-weight: 500;
-      background: var(--gray-100);
-      color: var(--gray-600);
-      padding: 0.15rem 0.5rem;
-      border-radius: 4px;
-    }
-
+    .card-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .tag { font-size: 0.65rem; font-weight: 500; background: var(--gray-100); color: var(--gray-600); padding: 0.15rem 0.5rem; border-radius: 4px; }
     .card-btn {
-      display: flex;
-      align-items: center;
-      gap: 0.35rem;
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: var(--accent);
-      white-space: nowrap;
+      display: flex; align-items: center; gap: 0.35rem;
+      font-size: 0.78rem; font-weight: 700; color: var(--accent); white-space: nowrap;
     }
-
     .card-btn svg {
-      width: 14px;
-      height: 14px;
-      stroke: var(--accent);
-      fill: none;
-      stroke-width: 2.5;
-      stroke-linecap: round;
-      stroke-linejoin: round;
+      width: 14px; height: 14px; stroke: var(--accent); fill: none;
+      stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
       transition: transform var(--transition);
     }
+    .product-card:hover .card-btn svg { transform: translateX(3px); }
 
-    .product-card:hover .card-btn svg {
-      transform: translateX(3px);
+    /* ─── SEARCH RESULTS ─── */
+    #searchResults { display: none; }
+    #searchResults.show { display: block; }
+    .result-count {
+      font-size: 0.8rem; color: var(--gray-600);
+      margin-bottom: 1rem; padding-left: 0.2rem;
     }
+    .result-count strong { color: var(--accent); }
+    .result-list { display: flex; flex-direction: column; gap: 0.6rem; }
+    .result-item {
+      background: var(--white);
+      border-radius: 10px;
+      box-shadow: var(--card-shadow);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.85rem 1.1rem;
+      text-decoration: none;
+      border: 1.5px solid transparent;
+      transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+      gap: 1rem;
+    }
+    .result-item:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--card-hover-shadow);
+      border-color: var(--accent);
+    }
+    .result-left { display: flex; align-items: center; gap: 0.75rem; min-width: 0; }
+    .result-product-tag {
+      font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.6rem;
+      border-radius: 5px; white-space: nowrap; flex-shrink: 0;
+    }
+    .result-name {
+      font-size: 0.95rem; font-weight: 700; color: var(--navy);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .result-name mark {
+      background: rgba(232, 160, 32, 0.3);
+      color: var(--navy); border-radius: 2px; padding: 0 1px;
+    }
+    .result-go {
+      display: flex; align-items: center; gap: 0.3rem;
+      font-size: 0.75rem; font-weight: 700; color: var(--accent);
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .result-go svg {
+      width: 13px; height: 13px; stroke: var(--accent); fill: none;
+      stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+      transition: transform var(--transition);
+    }
+    .result-item:hover .result-go svg { transform: translateX(3px); }
 
     /* ─── NO RESULTS ─── */
     .no-results {
-      display: none;
-      text-align: center;
-      padding: 3rem 1rem;
-      color: var(--gray-400);
-      grid-column: 1 / -1;
+      text-align: center; padding: 3rem 1rem; color: var(--gray-400);
     }
-
-    .no-results.show { display: block; }
-
     .no-results-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
-
     .no-results p { font-size: 0.9rem; }
 
     /* ─── FOOTER ─── */
     footer {
-      text-align: center;
-      padding: 1.5rem;
-      font-size: 0.72rem;
-      color: var(--gray-400);
+      text-align: center; padding: 1.5rem;
+      font-size: 0.72rem; color: var(--gray-400);
       border-top: 1px solid var(--gray-200);
     }
   </style>
@@ -376,12 +268,16 @@
         <h2>QA DEFECT QUICK REFERENCE SYSTEM</h2>
       </div>
     </div>
-    <div class="header-badge">6 產品線</div>
+    <div class="header-right">
+      <span class="version-badge">V1.0.0</span>
+      <div class="header-badge">6 產品線</div>
+    </div>
   </div>
   <div class="header-search">
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
-      <input type="text" id="searchInput" placeholder="搜尋產品名稱 (例：塑膠蓋、瓶胚…)" autocomplete="off" />
+      <input type="text" id="searchInput" placeholder="搜尋缺失名稱（例：黑點、毛邊、氣泡…）" autocomplete="off" />
+      <button class="search-clear" id="searchClear" title="清除">✕</button>
     </div>
   </div>
 </header>
@@ -402,210 +298,221 @@
 </div>
 
 <main>
-  <div class="section-title">選擇產品查閱異常</div>
+  <!-- Product grid view -->
+  <div id="gridView">
+    <div class="section-title">選擇產品查閱異常</div>
+    <div class="product-grid">
 
-  <div class="product-grid" id="productGrid">
+      <a class="product-card" href="aluminum_cap/aluminum_cap.html">
+        <div class="card-header">
+          <div class="card-icon-wrap" style="background:#fff3e0;">🥫</div>
+          <div class="card-count-badge">79 項異常</div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">鋁蓋</div>
+          <div class="card-subtitle">ALUMINUM CAP</div>
+          <div class="card-desc">鋁蓋成型、外觀、結構、封口等各類異常圖文說明，含 TPE 內墊相關問題。</div>
+        </div>
+        <div class="card-footer">
+          <div class="card-tags"><span class="tag">成型</span><span class="tag">外觀</span><span class="tag">封口</span></div>
+          <div class="card-btn">查閱 <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>
+      </a>
 
-    <!-- 鋁蓋 -->
-    <a class="product-card" href="aluminum_cap/aluminum_cap.html"
-       data-name="鋁蓋 aluminum cap 金屬蓋">
-      <div class="card-header">
-        <div class="card-icon-wrap" style="background:#fff3e0;">🥫</div>
-        <div class="card-count-badge">79 項異常</div>
-      </div>
-      <div class="card-body">
-        <div class="card-title">鋁蓋</div>
-        <div class="card-subtitle">ALUMINUM CAP</div>
-        <div class="card-desc">鋁蓋成型、外觀、結構、封口等各類異常圖文說明，含 TPE 內墊相關問題。</div>
-      </div>
-      <div class="card-footer">
-        <div class="card-tags">
-          <span class="tag">成型</span>
-          <span class="tag">外觀</span>
-          <span class="tag">封口</span>
+      <a class="product-card" href="bottle/bottle.html">
+        <div class="card-header">
+          <div class="card-icon-wrap" style="background:#e8f5e9;">🍶</div>
+          <div class="card-count-badge">30 項異常</div>
         </div>
-        <div class="card-btn">
-          查閱
-          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        <div class="card-body">
+          <div class="card-title">吹瓶</div>
+          <div class="card-subtitle">BLOW BOTTLE</div>
+          <div class="card-desc">PET 吹瓶製程異常，涵蓋瓶身、瓶口、容量、套標偏移等外觀與結構問題。</div>
         </div>
-      </div>
-    </a>
+        <div class="card-footer">
+          <div class="card-tags"><span class="tag">瓶身</span><span class="tag">瓶口</span><span class="tag">套標</span></div>
+          <div class="card-btn">查閱 <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>
+      </a>
 
-    <!-- 吹瓶 -->
-    <a class="product-card" href="bottle/bottle.html"
-       data-name="吹瓶 bottle 瓶子 PET瓶">
-      <div class="card-header">
-        <div class="card-icon-wrap" style="background:#e8f5e9;">🍶</div>
-        <div class="card-count-badge">30 項異常</div>
-      </div>
-      <div class="card-body">
-        <div class="card-title">吹瓶</div>
-        <div class="card-subtitle">BLOW BOTTLE</div>
-        <div class="card-desc">PET 吹瓶製程異常，涵蓋瓶身、瓶口、容量、套標偏移等外觀與結構問題。</div>
-      </div>
-      <div class="card-footer">
-        <div class="card-tags">
-          <span class="tag">瓶身</span>
-          <span class="tag">瓶口</span>
-          <span class="tag">套標</span>
+      <a class="product-card" href="cap_metal/cap_metal.html">
+        <div class="card-header">
+          <div class="card-icon-wrap" style="background:#fce4ec;">🔩</div>
+          <div class="card-count-badge">53 項異常</div>
         </div>
-        <div class="card-btn">
-          查閱
-          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        <div class="card-body">
+          <div class="card-title">爪蓋</div>
+          <div class="card-subtitle">METAL CAP</div>
+          <div class="card-desc">金屬爪蓋之成型不良、外觀瑕疵、密封與鎖固相關異常圖文查閱。</div>
         </div>
-      </div>
-    </a>
+        <div class="card-footer">
+          <div class="card-tags"><span class="tag">成型</span><span class="tag">密封</span><span class="tag">外觀</span></div>
+          <div class="card-btn">查閱 <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>
+      </a>
 
-    <!-- 爪蓋 -->
-    <a class="product-card" href="cap_metal/cap_metal.html"
-       data-name="爪蓋 cap metal 金屬爪蓋">
-      <div class="card-header">
-        <div class="card-icon-wrap" style="background:#fce4ec;">🔩</div>
-        <div class="card-count-badge">53 項異常</div>
-      </div>
-      <div class="card-body">
-        <div class="card-title">爪蓋</div>
-        <div class="card-subtitle">METAL CAP</div>
-        <div class="card-desc">金屬爪蓋之成型不良、外觀瑕疵、密封與鎖固相關異常圖文查閱。</div>
-      </div>
-      <div class="card-footer">
-        <div class="card-tags">
-          <span class="tag">成型</span>
-          <span class="tag">密封</span>
-          <span class="tag">外觀</span>
+      <a class="product-card" href="label/label.html">
+        <div class="card-header">
+          <div class="card-icon-wrap" style="background:#e3f2fd;">🏷️</div>
+          <div class="card-count-badge">20 項異常</div>
         </div>
-        <div class="card-btn">
-          查閱
-          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        <div class="card-body">
+          <div class="card-title">標籤</div>
+          <div class="card-subtitle">LABEL</div>
+          <div class="card-desc">標籤印刷、貼標、套標偏移、氣泡、皺摺等外觀與貼合品質異常。</div>
         </div>
-      </div>
-    </a>
+        <div class="card-footer">
+          <div class="card-tags"><span class="tag">印刷</span><span class="tag">貼合</span><span class="tag">外觀</span></div>
+          <div class="card-btn">查閱 <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>
+      </a>
 
-    <!-- 標籤 -->
-    <a class="product-card" href="label/label.html"
-       data-name="標籤 label 貼標 套標">
-      <div class="card-header">
-        <div class="card-icon-wrap" style="background:#e3f2fd;">🏷️</div>
-        <div class="card-count-badge">20 項異常</div>
-      </div>
-      <div class="card-body">
-        <div class="card-title">標籤</div>
-        <div class="card-subtitle">LABEL</div>
-        <div class="card-desc">標籤印刷、貼標、套標偏移、氣泡、皺摺等外觀與貼合品質異常。</div>
-      </div>
-      <div class="card-footer">
-        <div class="card-tags">
-          <span class="tag">印刷</span>
-          <span class="tag">貼合</span>
-          <span class="tag">外觀</span>
+      <a class="product-card" href="plastic_cap/plastic_cap.html">
+        <div class="card-header">
+          <div class="card-icon-wrap" style="background:#f3e5f5;">🔵</div>
+          <div class="card-count-badge">72 項異常</div>
         </div>
-        <div class="card-btn">
-          查閱
-          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        <div class="card-body">
+          <div class="card-title">塑膠蓋</div>
+          <div class="card-subtitle">PLASTIC CAP</div>
+          <div class="card-desc">PP/PE 塑膠蓋射出成型、外觀缺陷、螺紋、防竄蓋等多類異常詳細圖解。</div>
         </div>
-      </div>
-    </a>
+        <div class="card-footer">
+          <div class="card-tags"><span class="tag">射出</span><span class="tag">螺紋</span><span class="tag">防竄</span></div>
+          <div class="card-btn">查閱 <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>
+      </a>
 
-    <!-- 塑膠蓋 -->
-    <a class="product-card" href="plastic_cap/plastic_cap.html"
-       data-name="塑膠蓋 plastic cap PP蓋 PE蓋">
-      <div class="card-header">
-        <div class="card-icon-wrap" style="background:#f3e5f5;">🔵</div>
-        <div class="card-count-badge">72 項異常</div>
-      </div>
-      <div class="card-body">
-        <div class="card-title">塑膠蓋</div>
-        <div class="card-subtitle">PLASTIC CAP</div>
-        <div class="card-desc">PP/PE 塑膠蓋射出成型、外觀缺陷、螺紋、防竄蓋等多類異常詳細圖解。</div>
-      </div>
-      <div class="card-footer">
-        <div class="card-tags">
-          <span class="tag">射出</span>
-          <span class="tag">螺紋</span>
-          <span class="tag">防竄</span>
+      <a class="product-card" href="preform_defect/preform_defect.html">
+        <div class="card-header">
+          <div class="card-icon-wrap" style="background:#e0f7fa;">🧪</div>
+          <div class="card-count-badge">55 項異常</div>
         </div>
-        <div class="card-btn">
-          查閱
-          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        <div class="card-body">
+          <div class="card-title">瓶胚</div>
+          <div class="card-subtitle">PREFORM</div>
+          <div class="card-desc">PET 瓶胚射出成型異常，包含結晶、氣泡、燒焦、縮水、異物等各類缺陷。</div>
         </div>
-      </div>
-    </a>
+        <div class="card-footer">
+          <div class="card-tags"><span class="tag">結晶</span><span class="tag">氣泡</span><span class="tag">射出</span></div>
+          <div class="card-btn">查閱 <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>
+      </a>
 
-    <!-- 瓶胚 -->
-    <a class="product-card" href="preform_defect/preform_defect.html"
-       data-name="瓶胚 preform 預型體 胚管">
-      <div class="card-header">
-        <div class="card-icon-wrap" style="background:#e0f7fa;">🧪</div>
-        <div class="card-count-badge">55 項異常</div>
-      </div>
-      <div class="card-body">
-        <div class="card-title">瓶胚</div>
-        <div class="card-subtitle">PREFORM</div>
-        <div class="card-desc">PET 瓶胚射出成型異常，包含結晶、氣泡、燒焦、縮水、異物等各類缺陷。</div>
-      </div>
-      <div class="card-footer">
-        <div class="card-tags">
-          <span class="tag">結晶</span>
-          <span class="tag">氣泡</span>
-          <span class="tag">射出</span>
-        </div>
-        <div class="card-btn">
-          查閱
-          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-        </div>
-      </div>
-    </a>
-
-    <!-- No results -->
-    <div class="no-results" id="noResults">
-      <div class="no-results-icon">🔍</div>
-      <p>找不到符合「<span id="noResultsKeyword"></span>」的產品</p>
     </div>
+  </div>
 
+  <!-- Search results view -->
+  <div id="searchResults">
+    <div class="section-title" id="resultSection">搜尋結果</div>
+    <div class="result-count" id="resultCount"></div>
+    <div class="result-list" id="resultList"></div>
   </div>
 </main>
 
 <footer>
-  品質異常快速查閱系統 &nbsp;|&nbsp; QA Defect Quick Reference &nbsp;|&nbsp; 6 產品線 · 309 項異常
+  品質異常快速查閱系統 &nbsp;|&nbsp; QA Defect Quick Reference &nbsp;|&nbsp; 6 產品線 · 309 項異常 &nbsp;|&nbsp; V1.0.0
 </footer>
 
 <script>
-  const searchInput = document.getElementById('searchInput');
-  const cards = document.querySelectorAll('.product-card');
-  const noResults = document.getElementById('noResults');
-  const noResultsKeyword = document.getElementById('noResultsKeyword');
+// ─── All defects database ───
+const PRODUCTS = [
+  {
+    key: 'aluminum_cap', name: '鋁蓋', file: 'aluminum_cap/aluminum_cap.html',
+    color: '#e65100', bg: '#fff3e0',
+    defects: ["TPE內墊黑點","上光不良","內凸字拋光破洞","內墊溢料","內墊髒污","內墊油污","內墊缺料","切割接點錯位","切口成型不良","切嘴未斷(廢料環未斷)","印刷脫漆","印刷色差","印刷金屬材刮擦傷","單切未斷","螺紋圈數不足","塗佈不均","塗佈魚眼","塗印塗料垂流","塗印塗料流展性差","塗印耐溶劑差","塗印起泡","套色偏移","安全齒斷裂","平坦度不佳","拉環內側刮傷","拉環缺口","撕拉線破裂","拋光不良","捲圓破損","架橋切口上翹","架橋斷裂","架橋相連","架橋點過大","豎架痕","模痕","止滑條掉漆","沖壓商標歪斜","螺紋深度不足","滾唇不完整","滾印模糊","滾印脫漆","滾印附著不良","滾印墨點","滾花破齒","滾花變形","滾花露鋁","火山口","環膠成型不良","螺紋破裂(牙末端)","螺紋破裂(牙溝底)","螺紋破裂(起始點)","素材刮擦傷","背面沾漆","皺蓋","蓋側(切口)掉漆","蓋側刮傷","蓋側壓痕","蓋側撞傷","蓋側裂蓋","胚蓋變形","蓋面壓傷","蓋面撞傷","蓋面爐灰","蓋面沾附金油","蓋面凹陷","蓋體壓傷","蓋體字樣偏移","蓋體氣泡","蓋體髒污","蓋體油污","變形深度不足","變形深度破裂","金油滾印不均","針孔","開啟扭力過低","開啟扭力過高","防盜環未捲入","高溫殺菌白化(漆膜霧化)","墨皮轉印"]
+  },
+  {
+    key: 'bottle', name: '吹瓶', file: 'bottle/bottle.html',
+    color: '#2e7d32', bg: '#e8f5e9',
+    defects: ["中心點偏移","出瓶夾傷","套標偏移","套標未定位","容量過低","容量過高","凸底","標籤內折","標籤破裂","瓶頸(肩)燙傷","瓶口壓傷","瓶口撞傷","瓶底皺褶","瓶底擦傷","瓶底破洞","瓶頸漲大","瓶肩縮頭","瓶肩凹陷","瓶身刮傷","瓶身白化","瓶身凹陷","瓶身露點","破瓶","耐熱不良","負壓不良","貼標皺褶","貼標偏移","防盜環撞傷","歪頭","高度過高"]
+  },
+  {
+    key: 'cap_metal', name: '爪蓋', file: 'cap_metal/cap_metal.html',
+    color: '#880e4f', bg: '#fce4ec',
+    defects: ["斜膠","上光不良","交接點過高","印刷脫漆","印刷色差","印刷漆膜龜裂","印刷金屬材刮擦傷","塗佈不均","塗佈魚眼","塗印塗料垂流","塗印塗料流展性差","塗印耐溶劑差","塗印起泡","壓牙","套色偏移","平坦度不佳","漆膜成型龜裂","未上膠(空蓋)","豎架痕","膠粒髒污","沖壓商標歪斜","浮蓋","火山口","烘烤油污","膠烘烤黃化","墊片厚度不符","墊片折痕","墊片毛邊","墊片焦化","墊片破泡","墊片缺料","破蓋","膠缺角","翻蓋","肉脯露白","背面沾漆","皺蓋","歪斜蓋","蓋側刮傷","蓋內刮傷","蓋牙成型脫漆","蓋牙生鏽","蓋緣刮傷","蓋面刮傷","蓋面爐灰","蓋面凹陷","蓋體撞傷脫漆","蓋體髒污","過封","針孔","高溫殺菌白化(漆膜霧化)","黑斑點","墨皮轉印"]
+  },
+  {
+    key: 'label', name: '標籤', file: 'label/label.html',
+    color: '#1565c0', bg: '#e3f2fd',
+    defects: ["上墨不均","冰輪卡屑","印刷刀痕","合掌上膠異常","噴墨","失墨","套色不準","折徑尺寸不符","拖墨","斷續無膠","標籤刮痕","油墨回黏","版汙","膜紙厚薄不均","膜紙落捲","膜紙黑點","網點擴大","色差","膠滲透","膜面刮痕"]
+  },
+  {
+    key: 'plastic_cap', name: '塑膠蓋', file: 'plastic_cap/plastic_cap.html',
+    color: '#6a1b9a', bg: '#f3e5f5',
+    defects: ["鋁箔髒(油)污","內墊厚度超標","內塞髒(油)污","內塞壓傷變形","內塞植入無定位","內塞毛邊","內塞破裂缺料","內墊溢料","內墊毛鬚","內墊氣泡","內墊混料","內墊刮絲","內墊缺料","內墊起屑","切割毛邊(切割斷差)","切割髒污","印刷不飽和","印刷偏移","印刷刀痕","印刷字樣模糊","印刷缺墨","印刷脫漆","印刷色差","反捲缺料","壁厚差異過大","套色偏移","強化環毛邊(壓模)","強化環毛邊(射出)","強化環變形","鋁箔成型毛邊","鋁箔拉耳缺口","斷橋(架橋點斷裂)","斷環(防盜環斷裂)","架橋斷裂","架橋相連","架橋點拉伸","鋁箔植入無定位","止滑條擦傷","波浪蓋","注口未削平","注口點破洞","浮蓋(封蓋未定位)","螺牙崩牙","螺牙起始點偏移","空蓋無鋁箔","空蓋無內墊","空蓋無內塞","脫蓋","葉片上翹","葉片斷裂","葉片毛邊(壓模)","葉片毛邊(射出)","葉片缺料(射出)","凹蓋","凸蓋","斜蓋(封蓋歪斜)","蓋面油墨污點","蓋體溢料","蓋體焦化","蓋體粗糙度不良","蓋體色差","蓋體熔融","蓋體黑點","重複(雙)鋁箔","重複(雙)內塞","長凸壓傷","長凸拉傷","開啟扭力不穩","開啟扭力過低","開啟扭力過高","防盜環斷裂","防盜環毛邊","飛碟蓋"]
+  },
+  {
+    key: 'preform_defect', name: '瓶胚', file: 'preform_defect/preform_defect.html',
+    color: '#006064', bg: '#e0f7fa',
+    defects: ["Gate剪尾不平整","主體成橢圓形(胚身翹曲)","內部凹陷","口中的銷孔","合模線變形","合模線凹陷","喇叭形痕跡","壁厚不均","底部凹陷","應力不佳","拉(牽)絲","支撐環圈的白點","支撐環變形(畸形)","有色瓶胚表面剝落","未熔融物","氣泡","注口流延","注口空心","注口結晶","注口結晶(澆口痕跡)","注口剝落","注口變形(內部)","注口變形(外部)","注口起皺","注口過長","注口剝離","潮濕塑料滯留痕跡","焦痕","瓶頸刮傷","瓶口毛邊(合模線過粗)","瓶胚彎(扭)曲","瓶頸拉伸","瓶頸流痕","瓶頸、瓶口裂紋","瓶頸部份剝離","刮痕.表面缺陷","短射","結合線.熔接線","結晶不完全","結晶支撐環斷裂","結晶瓶口波浪","縮痕","色斑","色差","胚身撞傷","胚身殘膠","胚身水痕","針孔","防盜環中的白點(冷料)","降解(瓶胚發黃)","降解(雲狀區段)","霧狀白化","高乙醛(A.A.)水平","高固有黏度(I.V.)降","黑點.污染"]
+  }
+];
 
-  searchInput.addEventListener('input', () => {
-    const q = searchInput.value.trim().toLowerCase();
-    let visibleCount = 0;
-
-    cards.forEach(card => {
-      const name = card.dataset.name.toLowerCase();
-      const text = card.innerText.toLowerCase();
-      if (!q || name.includes(q) || text.includes(q)) {
-        card.classList.remove('hidden');
-        visibleCount++;
-      } else {
-        card.classList.add('hidden');
-      }
-    });
-
-    if (visibleCount === 0 && q) {
-      noResults.classList.add('show');
-      noResultsKeyword.textContent = searchInput.value.trim();
-    } else {
-      noResults.classList.remove('show');
-    }
+// Build flat search index
+const searchIndex = [];
+PRODUCTS.forEach(p => {
+  p.defects.forEach(d => {
+    searchIndex.push({ productKey: p.key, productName: p.name, productFile: p.file, productColor: p.color, productBg: p.bg, defect: d });
   });
+});
 
-  // Allow pressing Enter/clicking card
-  cards.forEach(card => {
-    card.addEventListener('keydown', e => {
-      if (e.key === 'Enter') card.click();
-    });
-    card.setAttribute('tabindex', '0');
-    card.setAttribute('role', 'link');
-  });
+function highlight(text, q) {
+  if (!q) return text;
+  const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return text.replace(new RegExp(escaped, 'gi'), m => `<mark>${m}</mark>`);
+}
+
+const searchInput = document.getElementById('searchInput');
+const searchClear = document.getElementById('searchClear');
+const gridView = document.getElementById('gridView');
+const searchResults = document.getElementById('searchResults');
+const resultCount = document.getElementById('resultCount');
+const resultList = document.getElementById('resultList');
+
+function doSearch(q) {
+  const trimmed = q.trim();
+  searchClear.classList.toggle('show', trimmed.length > 0);
+
+  if (!trimmed) {
+    gridView.style.display = '';
+    searchResults.classList.remove('show');
+    return;
+  }
+
+  gridView.style.display = 'none';
+  searchResults.classList.add('show');
+
+  const lower = trimmed.toLowerCase();
+  const matches = searchIndex.filter(item => item.defect.toLowerCase().includes(lower));
+
+  if (matches.length === 0) {
+    resultCount.innerHTML = '';
+    resultList.innerHTML = `
+      <div class="no-results">
+        <div class="no-results-icon">🔍</div>
+        <p>找不到包含「${trimmed}」的缺失項目</p>
+      </div>`;
+    return;
+  }
+
+  resultCount.innerHTML = `共找到 <strong>${matches.length}</strong> 筆符合「${trimmed}」的缺失項目`;
+  resultList.innerHTML = matches.map(item => `
+    <a class="result-item" href="${item.productFile}?q=${encodeURIComponent(item.defect)}">
+      <div class="result-left">
+        <span class="result-product-tag" style="background:${item.productBg};color:${item.productColor};">${item.productName}</span>
+        <span class="result-name">${highlight(item.defect, trimmed)}</span>
+      </div>
+      <div class="result-go">查閱 <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+    </a>`).join('');
+}
+
+searchInput.addEventListener('input', () => doSearch(searchInput.value));
+searchClear.addEventListener('click', () => {
+  searchInput.value = '';
+  doSearch('');
+  searchInput.focus();
+});
 </script>
 
 </body>

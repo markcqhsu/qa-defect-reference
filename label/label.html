@@ -439,10 +439,10 @@
 <header>
   <div class="header-top">
     <div class="header-titles">
-      <h1>🔍 標籤異常快速查閱</h1>
+      <h1><a href="../index.html" style="color:inherit;text-decoration:none;">🔍 標籤異常快速查閱</a></h1>
       <h2>DEFECT QUICK REFERENCE SYSTEM</h2>
     </div>
-    <span class="header-badge">2022 二版-改</span>
+    <span class="header-badge">2022 二版-改 &nbsp;|&nbsp; V1.0.0</span>
   </div>
 
   <div class="header-search">
@@ -913,6 +913,10 @@ if (searchInput) {
 
 document.addEventListener("DOMContentLoaded", () => { applyFilter(); });
 applyFilter();
+(function() {
+  const q = new URLSearchParams(window.location.search).get('q');
+  if (q && searchInput) { searchInput.value = q; keyword = q; applyFilter(); }
+})();
 </script>
 </body>
 </html>
