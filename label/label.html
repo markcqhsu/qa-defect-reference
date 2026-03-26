@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>標籤異常快速查閱</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0a1628;
+      --navy-mid: #112240;
+      --navy-light: #1a3a5c;
+      --accent: #e8a020;
+      --accent-light: #f5bb4a;
+      --accent-dim: rgba(232, 160, 32, 0.15);
+      --white: #ffffff;
+      --gray-100: #f0f2f5;
+      --gray-200: #e2e6ec;
+      --gray-400: #8a98ab;
+      --gray-600: #4a5568;
+      --danger: #e05252;
+      --success: #38b28a;
+      --card-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      --card-hover-shadow: 0 12px 40px rgba(0,0,0,0.15);
+      --transition: 0.22s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+      background: var(--gray-100);
+      color: var(--navy);
+      min-height: 100vh;
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      background: var(--navy);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 1.5rem 0.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .header-titles h1 {
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: var(--white);
+      letter-spacing: 0.04em;
+    }
+
+    .header-titles h2 {
+      font-size: 0.72rem;
+      font-weight: 400;
+      color: var(--gray-400);
+      letter-spacing: 0.06em;
+      margin-top: 2px;
+    }
+
+    .header-badge {
+      background: var(--accent);
+      color: var(--navy);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.25rem 0.7rem;
+      border-radius: 99px;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    /* Search */
+    .header-search {
+      padding: 0.6rem 1.5rem;
+    }
+
+    .search-wrap {
+      position: relative;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray-400);
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+    #search-input {
+      width: 100%;
+      padding: 0.65rem 1rem 0.65rem 2.6rem;
+      font-size: 0.9rem;
+      font-family: inherit;
+      border-radius: 999px;
+      border: 1.5px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.07);
+      color: var(--white);
+      outline: none;
+      transition: border-color var(--transition), background var(--transition);
+    }
+
+    #search-input::placeholder { color: var(--gray-400); }
+    #search-input:focus {
+      border-color: var(--accent);
+      background: rgba(255,255,255,0.11);
+    }
+
+    /* Filter Pills */
+    .filter-scroll-wrap {
+      overflow-x: auto;
+      padding: 0.55rem 1rem 0.7rem;
+      scrollbar-width: none;
+    }
+    .filter-scroll-wrap::-webkit-scrollbar { display: none; }
+
+    #filters {
+      display: flex;
+      gap: 0.45rem;
+      width: max-content;
+    }
+
+    .filter {
+      padding: 0.38rem 0.9rem;
+      font-size: 0.82rem;
+      font-family: inherit;
+      font-weight: 500;
+      border: 1.5px solid rgba(255,255,255,0.15);
+      border-radius: 99px;
+      background: transparent;
+      color: rgba(255,255,255,0.7);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all var(--transition);
+      letter-spacing: 0.02em;
+    }
+
+    .filter:hover {
+      background: rgba(255,255,255,0.1);
+      color: var(--white);
+      border-color: rgba(255,255,255,0.3);
+    }
+
+    .filter.active {
+      background: var(--accent);
+      color: var(--navy);
+      border-color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* Result count */
+    .result-info {
+      padding: 0.7rem 1.5rem 0.2rem;
+      font-size: 0.78rem;
+      color: var(--gray-600);
+      letter-spacing: 0.02em;
+    }
+
+    /* ─── CARDS ─── */
+    #card-container {
+      padding: 0.8rem 1rem 3rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 0.8rem;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 0.7rem 0.6rem 0.8rem;
+      cursor: pointer;
+      text-align: center;
+      box-shadow: var(--card-shadow);
+      transition: transform var(--transition), box-shadow var(--transition);
+      border: 1.5px solid transparent;
+      animation: cardFadeIn 0.3s ease both;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @keyframes cardFadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transition: transform var(--transition);
+      transform-origin: left;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--card-hover-shadow);
+      border-color: var(--accent-light);
+    }
+
+    .card:hover::before { transform: scaleX(1); }
+
+    .card img {
+      width: 100%;
+      height: 90px;
+      object-fit: contain;
+      border-radius: 6px;
+      background: var(--gray-100);
+      margin-bottom: 0.5rem;
+    }
+
+    .card-tag {
+      display: inline-block;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+      background: var(--accent-dim);
+      padding: 0.1rem 0.45rem;
+      border-radius: 4px;
+      margin-bottom: 0.3rem;
+    }
+
+    .card h3 {
+      font-size: 0.88rem;
+      font-weight: 700;
+      line-height: 1.4;
+      color: var(--navy);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Empty state */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 4rem 1rem;
+      color: var(--gray-400);
+    }
+
+    .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .empty-state p { font-size: 0.95rem; }
+
+    /* ─── MODAL ─── */
+    #modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 10, 20, 0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      z-index: 9999;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    #modal.hidden { display: none !important; }
+
+    .modal-content {
+      background: var(--white);
+      width: 100%;
+      max-width: 600px;
+      border-radius: 16px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.35);
+      animation: modalSlideUp 0.28s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    @keyframes modalSlideUp {
+      from { opacity: 0; transform: translateY(30px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-header {
+      background: var(--navy);
+      padding: 1.1rem 1.3rem;
+      border-radius: 16px 16px 0 0;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    #modal-title {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: var(--white);
+      letter-spacing: 0.04em;
+    }
+
+    #close {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      color: var(--white);
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background var(--transition);
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    #close:hover { background: rgba(255,255,255,0.25); }
+
+    .modal-img-wrap {
+      padding: 1rem 1.3rem 0.5rem;
+      background: var(--gray-100);
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    #modal-img {
+      width: 100%;
+      max-height: 220px;
+      object-fit: contain;
+      border-radius: 8px;
+      display: block;
+    }
+
+    .modal-body {
+      padding: 0.8rem 1.3rem 1.5rem;
+    }
+
+    .modal-pair {
+      margin-bottom: 0.9rem;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1.5px solid var(--gray-200);
+    }
+
+    .modal-pair-header {
+      background: var(--navy-mid);
+      color: var(--white);
+      font-weight: 700;
+      font-size: 0.88rem;
+      padding: 0.6rem 0.9rem;
+      line-height: 1.5;
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-start;
+    }
+
+    .cause-label {
+      background: var(--accent);
+      color: var(--navy);
+      font-size: 0.72rem;
+      font-weight: 900;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      letter-spacing: 0.04em;
+    }
+
+    .modal-pair-solutions {
+      list-style: none;
+      padding: 0.5rem 0.9rem 0.6rem;
+      margin: 0;
+      background: #fafbfc;
+    }
+
+    .modal-pair-solutions li {
+      font-size: 0.87rem;
+      line-height: 1.65;
+      color: var(--navy);
+      padding: 0.3rem 0 0.3rem 1.2rem;
+      position: relative;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .modal-pair-solutions li:last-child { border-bottom: none; }
+
+    .modal-pair-solutions li::before {
+      content: '▶';
+      position: absolute;
+      left: 0;
+      font-size: 0.55rem;
+      color: var(--accent);
+      top: 0.42rem;
+    }
+
+    /* scrollbar */
+    .modal-content::-webkit-scrollbar { width: 4px; }
+    .modal-content::-webkit-scrollbar-track { background: transparent; }
+    .modal-content::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 99px; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 600px) {
+      .header-top { padding: 0.75rem 1rem 0.4rem; }
+      .header-titles h1 { font-size: 1.1rem; }
+      .header-search { padding: 0.5rem 1rem; }
+      .filter-scroll-wrap { padding: 0.45rem 0.8rem 0.6rem; }
+
+      #card-container {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 0.65rem;
+        padding: 0.7rem 0.8rem 3rem;
+      }
+
+      .card img { height: 75px; }
+      .card h3 { font-size: 0.82rem; }
+
+      .modal-content { max-height: 88vh; border-radius: 14px; }
+      #modal-title { font-size: 1rem; }
+      #modal-img { max-height: 160px; }
+      .modal-header { padding: 0.85rem 1rem; border-radius: 14px 14px 0 0; }
+      .modal-body { padding: 0.7rem 1rem 1.3rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="header-titles">
+      <h1>🔍 標籤異常快速查閱</h1>
+      <h2>DEFECT QUICK REFERENCE SYSTEM</h2>
+    </div>
+    <span class="header-badge">2022 二版-改</span>
+  </div>
+
+  <div class="header-search">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="輸入關鍵字搜尋（名稱 / 原因 / 對策）">
+    </div>
+  </div>
+
+  <div class="filter-scroll-wrap">
+    <div id="filters">
+      <button class="filter active" data-type="all">全部</button>
+    <button class="filter" data-type="原物料">原物料</button>
+    <button class="filter" data-type="印刷">印刷</button>
+    <button class="filter" data-type="分條">分條</button>
+    <button class="filter" data-type="合掌">合掌</button>
+    <button class="filter" data-type="吹膜">吹膜</button>
+    <button class="filter" data-type="捲狀">捲狀</button>
+
+    </div>
+  </div>
+</header>
+
+<div class="result-info" id="result-info"></div>
+<main id="card-container"></main>
+
+<!-- Modal -->
+<div id="modal" class="hidden">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="modal-title"></h2>
+      <button id="close" aria-label="關閉">&times;</button>
+    </div>
+    <div class="modal-img-wrap">
+      <img id="modal-img" alt="">
+    </div>
+    <div class="modal-body">
+      <div id="modal-pairs"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const defects = [
+    {
+      name: "印刷刀痕",
+      type: ["原物料","印刷"],
+      img: "images/印刷刀痕.JPG",
+      reason: [
+        "A.膜紙沾附異物 / 膜痕。(原物料)",
+        "B.油墨殘墨、未過濾。(油墨結皮)",
+        "C.網紋輥表面損傷。",
+        "D.刮刀片鈍化 / 受損，造成刮墨不均。",
+        "E.刮刀沾附髒污，造成刮墨不均。"
+      ],
+      solution: [
+        "A1.更換膜紙批生產。",
+        "B1.進行過濾及重新調和油墨。",
+        "C1.更換網紋輥。",
+        "D1.於產前研磨刮刀片。",
+        "D2.更換刮刀片新品。",
+        "E1.更換刮刀。"
+      ]
+    },{
+      name: "套色不準",
+      type: ["原物料","印刷"],
+      img: "images/套色不準.JPG",
+      reason: [
+        "A.膜紙波浪。(原物料)",
+        "B.套桶變形",
+        "C.貼版膠帶彈性疲乏。",
+        "D.樹酯版彈性疲乏。",
+        "E.套色貼版不準。",
+        "F.膜紙引入/收捲張力調整不當 。",
+        "G.電眼燈泡效能故障。",
+        "H.電眼訊號不良。",
+        "I.電眼訊號設定抓取位置錯誤。",
+        "J.色座顏色標示設定錯誤，造成操作員調整偏移站別錯誤。"
+      ],
+      solution: [
+        "A1.更換膜紙批生產。",
+        "B1.更換套桶。",
+        "C1.更換貼版膠帶。",
+        "D1.更換樹酯版。",
+        "E1.校正貼版位置。",
+        "F1.重新調整膜紙引入/收捲張力。",
+        "G1.更換電眼燈泡新品。",
+        "H1.保養清潔套色電眼與反射擋板。",
+        "H2.調整電眼訊號波長。",
+        "I1.重新設定電眼訊號抓取位置。",
+        "J1.重新設定各站顏色標示。"
+      ]
+    },{
+      name: "色差",
+      type: "印刷",
+      img: "images/色差.JPG",
+      reason: [
+        "A.樹脂版印刷米數已達極限",
+        "B.因印刷米數上升、溫度上升，導致樹酯版膨脹產生色差",
+        "C.彩圖套疊色不良，造成印刷色差。",
+        "D.樹酯版塞版，造成印刷色差。"
+      ],
+      solution: [
+        "A1.制定印刷米數限制，超過即從新製版。",
+        "B1.更換網紋輥尺寸，調整帶墨量。",
+        "C1.調整套疊色部位之色系。",
+        "D1.重新洗版。"
+      ]
+    },{
+      name: "噴墨",
+      type: "印刷",
+      img: "images/噴墨.JPG",
+      reason: [
+        "A.刮刀與網紋輥刮墨印刷時，因刮刀磨損，造成油墨噴墨污染。",
+        "B.靜電干擾。"
+      ],
+      solution: [
+        "A1.更換刮刀。",
+        "B1.加裝靜電消除器 / 添加靜電消除劑。"
+      ]
+    },{
+      name: "拖墨",
+      type: "印刷",
+      img: "images/拖墨.JPG",
+      reason: [
+        "A.油墨雜質 / 固化物過多，造成沾附網紋輥。",
+        "B.環境落塵，造成墨槽污染沾附雜質。",
+        "C.刮刀片鈍化 / 受損，造成刮墨不均。"
+      ],
+      solution: [
+        "A1.清潔網紋輥，並過濾油墨中之雜質 / 固化物。",
+        "B1.清潔墨槽與刮刀。",
+        "C1.更換刮刀。"
+      ]
+    },{
+      name: "版汙",
+      type: "印刷",
+      img: "images/版汙.JPG",
+      reason: [
+        "A.校正色系時停機次數過多，造成油墨快乾固化。",
+        "B.印刷過程中粉塵、毛屑掉落沾附樹酯版上。",
+        "C.印刷過程中油墨阻塞於網點，造成印刷塞版無法均勻上墨。",
+        "D.印刷過程中網點間產生積墨。"
+      ],
+      solution: [
+        "A1.停機5min以上須清洗樹酯版。",
+        "B1.使用隨手黏黏除粉塵、毛屑，如無法清除需拆版清洗。",
+        "C1. 清洗樹酯版。",
+        "D1. 清洗樹酯版。"
+      ]
+    },{
+      name: "油墨回黏",
+      type: "印刷",
+      img: "images/油墨回黏.JPG",
+      reason: [
+        "A.UV燈功率過低。"
+      ],
+      solution: [
+        "A1.定時1000小時更換燈管。"
+      ]
+    },{
+      name: "冰輪卡屑",
+      type: "印刷",
+      img: "images/冰輪卡屑.JPG",
+      reason: [
+        "A.印刷冰輪(壓力輪)沾附膜紙碎屑，造成印刷版面壓傷不良。"
+      ],
+      solution: [
+        "A1.立即停機重新檢視並清潔冰輪。"
+      ]
+    },{
+      name: "上墨不均",
+      type: "印刷",
+      img: "images/上墨不均.JPG",
+      reason: [
+        "A.樹酯版與網紋輥左右壓力不均。",
+        "B.遞墨輪受損。"
+      ],
+      solution: [
+        "A1.調整左右壓力，使左右壓力相同。",
+        "B1.更換遞墨輪。"
+      ]
+    },{
+      name: "失墨",
+      type: "印刷",
+      img: "images/失墨.JPG",
+      reason: [
+        "A.墨槽油墨不足。",
+        "B.氣動幫浦阻塞故障。"
+      ],
+      solution: [
+        "A1.重新調和並添加適量之油墨。",
+        "A2.調高墨槽平台高度，以增加吃墨量。",
+        "B1.重新開啟氣動幫浦 / 更換幫浦新品。"
+      ]
+    },{
+      name: "網點擴大",
+      type: "印刷",
+      img: "images/網點擴大.JPG",
+      reason: [
+        "A.樹酯版疲乏崩塌。"
+      ],
+      solution: [
+        "A1.更換樹酯版。"
+      ]
+    },{
+      name: "折徑尺寸不符",
+      type: ["原物料","分條","合掌"],
+      img: "images/折徑尺寸不符.JPG",
+      reason: [
+        "A.膜紙(PVC膜)厚薄差異過大。(原物料)",
+        "B.分條 / 合掌張力過大，導致分條淨寬變小，合掌後易產生折徑過小情形。(分條合掌)",
+        "C.合掌模板尺寸使用錯誤，造成合掌後折徑過小。(合掌)",
+        "D.壓輪不密合。(合掌)"
+      ],
+      solution: [
+        "A1.更換新膜紙批生產。",
+        "B1.重新設定分條 / 合掌張力及速度。",
+        "C1.更換正確之模板。",
+        "D1.停機檢查清潔橡膠壓輪/校正壓輪兩側平衡。"
+      ]
+    },{
+      name: "斷續無膠",
+      type: ["分條","合掌"],
+      img: "images/斷續無膠.JPG",
+      reason: [
+        "A.分條刀片鈍化，產生膜紙毛邊導致沾膠不均。(分條)",
+        "B.分條張力過大，使膜紙易產生翹邊 / 波浪 / 皺折，導致合掌時沾膠不均。(分條)",
+        "C.膜紙遭受重壓 / 誤用變形紙管使膜紙產生皺折，導致合掌時沾膠不均。(分條)",
+        "D.合掌膠水管路阻塞，導致膠水出量 / 均勻度不足。(合掌)",
+        "E.膠水棉花髒污 / 乾燥硬化，造成膠水出量不穩定。(合掌)"
+      ],
+      solution: [
+        "A1.更換刀片新品。",
+        "B1.重新設定分條張力，以降低分條後翹邊 / 波浪 / 皺折問題。",
+        "C1.確認分條時有無誤用變形紙管 / 膜紙遭受重壓。",
+        "D1.停機將膠水管路中的雜質或氣泡排除。",
+        "E1.檢查膠水棉花有無髒污 / 乾燥硬化，並定時更換棉花新品。"
+      ]
+    },{
+      name: "膠滲透",
+      type: "合掌",
+      img: "images/膠滲透.JPG",
+      reason: [
+        "A.膠水滲透性過強。",
+        "B.膠水出膠量過多。"
+      ],
+      solution: [
+        "A1.更換合掌膠使用。",
+        "B1.調降膠水出膠量。",
+        "B2.檢查棉花大小有無使用不當，必要時須進行更換。"
+      ]
+    },{
+      name: "合掌上膠異常",
+      type: "合掌",
+      img: "images/合掌上膠異常.JPG",
+      reason: [
+        "A.膠水溶劑使用錯誤。",
+        "B.棉花阻塞，造成出膠量不足。",
+        "C.膠水管路異常。",
+        "D.針閥O型環老化損壞。"
+      ],
+      solution: [
+        "A1.停機更換，依據膜紙代號和膠水溶劑對照表，進行膠水溶劑的配分使用。",
+        "B1.檢查膠水棉花有無髒污 / 乾燥硬化，並定時更換棉花新品。",
+        "C1.停機將膠水管路中的雜質或氣泡排除。",
+        "D1.停機取出針閥， 進行更換O型環新品。"
+      ]
+    },{
+      name: "標籤刮痕",
+      type: ["印刷","分條","合掌"],
+      img: "images/標籤刮痕.JPG",
+      reason: [
+        "A.套色系統版面髒污 / 版面架版角度錯誤，造成標籤版面刮痕。(印刷)",
+        "B.翻轉架轉塔導輪髒污，造成標籤版面刮傷。(印刷)",
+        "C.膜料走料位置錯誤。(印刷)",
+        "D.鋁導輪故障無法正常作動。(印刷)",
+        "E.膜紙穿紙錯誤。(分條)",
+        "F.導輪異常卡死。(分條)",
+        "G.模板、羊毛氈髒汙。(合掌)",
+        "H.模板上的鐵弗龍膠帶破損或翹邊。(合掌)",
+        "I.穿紙方向錯誤。(合掌)"
+      ],
+      solution: [
+        "A1.清潔電眼套色系統版面 / 調整反光版角度。",
+        "B1.清潔翻轉架轉塔導輪。",
+        "C1.重新核對走料圖並確認調整走料位置。",
+        "D1.檢查清潔潤滑鋁導輪軸承，更換新鋁導輪軸承。",
+        "E1.重新核對走料圖並確認調整走料位置。",
+        "F1.清潔潤滑軸承或更換軸承。",
+        "G1.停機或換模中，取出羊毛氈及模板，進行清潔保養。",
+        "H1.立即停機重新更換黏貼鐵氟龍膠帶。",
+        "I1.重新核對走料圖並確認調整走料位置。"
+      ]
+    },{
+      name: "膜紙黑點",
+      type: "吹膜",
+      img: "images/膜紙黑點.JPG",
+      reason: [
+        "A.原料雜質污染，導致熔融成型時產生。",
+        "B.螺桿中殘留老化料。"
+      ],
+      solution: [
+        "A1.更換新膜紙批生產。",
+        "B1.延長排料時間 / 排料量。",
+        "B2.保養清潔出料模頭 (內外模仁)。"
+      ]
+    },{
+      name: "膜紙厚薄不均",
+      type: "吹膜",
+      img: "images/膜紙厚薄不均.JPG",
+      reason: [
+        "A.模仁內外間距不一。"
+      ],
+      solution: [
+        "A1.重新校正調整模仁內外間距。",
+        "A2.生產中發現厚薄不均可由模頭外側做調整。"
+      ]
+    },{
+      name: "膜面刮痕",
+      type: ["吹膜","捲狀"],
+      img: "images/膜面刮痕.JPG",
+      reason: [
+        "A.出料模頭出口積料，導致硬化物刮傷膜面。",
+        "B.出料模頭受損，造成膜面刮痕。",
+        "C.裁切壓輪調整過緊，造成膜面刮痕。",
+        "D.收捲滾輪夾雜異物，導致收捲時膜紙刮傷。"
+      ],
+      solution: [
+        "A1.清潔保養出料模頭。",
+        "B1.清潔保養出料模頭 / 更換出料模頭。",
+        "C1.重新調正校正裁切壓輪。",
+        "D1.清潔擦拭滾輪。"
+      ]
+    },{
+      name: "膜紙落捲",
+      type: "捲狀",
+      img: "images/膜紙落捲.JPG",
+      reason: [
+        "A.滑劑添加過量。",
+        "B.捲曲張力不足。"
+      ],
+      solution: [
+        "A1.提高收捲張力。",
+        "A2.使用壓輪收捲，以增加膜紙收捲緊配之完整性。",
+        "A3.以人工拍整方式進行微調整。",
+        "B1.提高收捲張力。",
+        "B2.使用壓輪收捲，以增加膜紙收捲緊配之完整性。",
+        "B3.以人工拍整方式進行微調整。"
+      ]
+    }
+    
+  ];
+
+const container = document.getElementById("card-container");
+const modal = document.getElementById("modal");
+const modalTitle = document.getElementById("modal-title");
+const modalImg = document.getElementById("modal-img");
+const closeBtn = document.getElementById("close");
+const modalPairs = document.getElementById("modal-pairs");
+const resultInfo = document.getElementById("result-info");
+
+let currentType = "all";
+let keyword = "";
+
+function getTypeLabel(type) {
+  if (Array.isArray(type)) return type[0];
+  return type;
+}
+
+function renderCards(list) {
+  container.innerHTML = "";
+  resultInfo.textContent = `共 ${list.length} 項異常`;
+
+  if (list.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🔎</div><p>找不到符合條件的異常項目</p></div>`;
+    return;
+  }
+
+  list.forEach((d, i) => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.style.animationDelay = `${Math.min(i * 0.03, 0.5)}s`;
+    card.innerHTML = `
+      <img src="${d.img}" alt="${d.name}" loading="lazy" onerror="this.style.display='none'">
+      <div class="card-tag">${getTypeLabel(d.type)}</div>
+      <h3>${d.name}</h3>
+    `;
+    card.onclick = () => openModal(d);
+    container.appendChild(card);
+  });
+}
+
+function openModal(d) {
+  modalTitle.innerText = d.name;
+  modalImg.src = d.img;
+  modalImg.alt = d.name;
+
+  const solutionMap = {};
+  d.solution.forEach(text => {
+    const m = text.match(/^([A-Za-z])/);
+    if (!m) return;
+    const key = m[1];
+    if (!solutionMap[key]) solutionMap[key] = [];
+    solutionMap[key].push(text);
+  });
+
+  let html = "";
+  d.reason.forEach(r => {
+    const m = r.match(/^([A-Za-z])/);
+    const key = m ? m[1] : "";
+    const sols = solutionMap[key] || [];
+    html += `
+      <div class="modal-pair">
+        <div class="modal-pair-header">
+          <span class="cause-label">${key || '?'}</span>
+          <span>${r.replace(/^[A-Za-z]\./, '').trim()}</span>
+        </div>
+        ${sols.length ? `<ul class="modal-pair-solutions">${sols.map(s => `<li>${s}</li>`).join("")}</ul>` : ""}
+      </div>
+    `;
+  });
+
+  modalPairs.innerHTML = html;
+  modal.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+}
+
+function closeModal() {
+  modal.classList.add("hidden");
+  document.body.style.overflow = "";
+}
+
+modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+closeBtn.addEventListener("click", closeModal);
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+
+function applyFilter() {
+  const kw = keyword.trim().toLowerCase();
+  const list = defects.filter(d => {
+    let matchType = currentType === "all" ||
+      (Array.isArray(d.type) ? d.type.includes(currentType) : d.type === currentType);
+    const text = (d.name || "") + " " +
+      (Array.isArray(d.reason) ? d.reason.join(" ") : "") + " " +
+      (Array.isArray(d.solution) ? d.solution.join(" ") : "");
+    const matchKeyword = !kw || text.toLowerCase().includes(kw);
+    return matchType && matchKeyword;
+  });
+  renderCards(list);
+}
+
+document.querySelectorAll(".filter").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll(".filter").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentType = btn.dataset.type;
+    applyFilter();
+  };
+});
+
+const searchInput = document.getElementById("search-input");
+if (searchInput) {
+  searchInput.addEventListener("input", () => {
+    keyword = searchInput.value;
+    applyFilter();
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => { applyFilter(); });
+applyFilter();
+</script>
+</body>
+</html>

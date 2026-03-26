@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>爪蓋異常快速查閱</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0a1628;
+      --navy-mid: #112240;
+      --navy-light: #1a3a5c;
+      --accent: #e8a020;
+      --accent-light: #f5bb4a;
+      --accent-dim: rgba(232, 160, 32, 0.15);
+      --white: #ffffff;
+      --gray-100: #f0f2f5;
+      --gray-200: #e2e6ec;
+      --gray-400: #8a98ab;
+      --gray-600: #4a5568;
+      --danger: #e05252;
+      --success: #38b28a;
+      --card-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      --card-hover-shadow: 0 12px 40px rgba(0,0,0,0.15);
+      --transition: 0.22s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+      background: var(--gray-100);
+      color: var(--navy);
+      min-height: 100vh;
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      background: var(--navy);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 1.5rem 0.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .header-titles h1 {
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: var(--white);
+      letter-spacing: 0.04em;
+    }
+
+    .header-titles h2 {
+      font-size: 0.72rem;
+      font-weight: 400;
+      color: var(--gray-400);
+      letter-spacing: 0.06em;
+      margin-top: 2px;
+    }
+
+    .header-badge {
+      background: var(--accent);
+      color: var(--navy);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.25rem 0.7rem;
+      border-radius: 99px;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    /* Search */
+    .header-search {
+      padding: 0.6rem 1.5rem;
+    }
+
+    .search-wrap {
+      position: relative;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray-400);
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+    #search-input {
+      width: 100%;
+      padding: 0.65rem 1rem 0.65rem 2.6rem;
+      font-size: 0.9rem;
+      font-family: inherit;
+      border-radius: 999px;
+      border: 1.5px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.07);
+      color: var(--white);
+      outline: none;
+      transition: border-color var(--transition), background var(--transition);
+    }
+
+    #search-input::placeholder { color: var(--gray-400); }
+    #search-input:focus {
+      border-color: var(--accent);
+      background: rgba(255,255,255,0.11);
+    }
+
+    /* Filter Pills */
+    .filter-scroll-wrap {
+      overflow-x: auto;
+      padding: 0.55rem 1rem 0.7rem;
+      scrollbar-width: none;
+    }
+    .filter-scroll-wrap::-webkit-scrollbar { display: none; }
+
+    #filters {
+      display: flex;
+      gap: 0.45rem;
+      width: max-content;
+    }
+
+    .filter {
+      padding: 0.38rem 0.9rem;
+      font-size: 0.82rem;
+      font-family: inherit;
+      font-weight: 500;
+      border: 1.5px solid rgba(255,255,255,0.15);
+      border-radius: 99px;
+      background: transparent;
+      color: rgba(255,255,255,0.7);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all var(--transition);
+      letter-spacing: 0.02em;
+    }
+
+    .filter:hover {
+      background: rgba(255,255,255,0.1);
+      color: var(--white);
+      border-color: rgba(255,255,255,0.3);
+    }
+
+    .filter.active {
+      background: var(--accent);
+      color: var(--navy);
+      border-color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* Result count */
+    .result-info {
+      padding: 0.7rem 1.5rem 0.2rem;
+      font-size: 0.78rem;
+      color: var(--gray-600);
+      letter-spacing: 0.02em;
+    }
+
+    /* ─── CARDS ─── */
+    #card-container {
+      padding: 0.8rem 1rem 3rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 0.8rem;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 0.7rem 0.6rem 0.8rem;
+      cursor: pointer;
+      text-align: center;
+      box-shadow: var(--card-shadow);
+      transition: transform var(--transition), box-shadow var(--transition);
+      border: 1.5px solid transparent;
+      animation: cardFadeIn 0.3s ease both;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @keyframes cardFadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transition: transform var(--transition);
+      transform-origin: left;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--card-hover-shadow);
+      border-color: var(--accent-light);
+    }
+
+    .card:hover::before { transform: scaleX(1); }
+
+    .card img {
+      width: 100%;
+      height: 90px;
+      object-fit: contain;
+      border-radius: 6px;
+      background: var(--gray-100);
+      margin-bottom: 0.5rem;
+    }
+
+    .card-tag {
+      display: inline-block;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+      background: var(--accent-dim);
+      padding: 0.1rem 0.45rem;
+      border-radius: 4px;
+      margin-bottom: 0.3rem;
+    }
+
+    .card h3 {
+      font-size: 0.88rem;
+      font-weight: 700;
+      line-height: 1.4;
+      color: var(--navy);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Empty state */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 4rem 1rem;
+      color: var(--gray-400);
+    }
+
+    .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .empty-state p { font-size: 0.95rem; }
+
+    /* ─── MODAL ─── */
+    #modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 10, 20, 0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      z-index: 9999;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    #modal.hidden { display: none !important; }
+
+    .modal-content {
+      background: var(--white);
+      width: 100%;
+      max-width: 600px;
+      border-radius: 16px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.35);
+      animation: modalSlideUp 0.28s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    @keyframes modalSlideUp {
+      from { opacity: 0; transform: translateY(30px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-header {
+      background: var(--navy);
+      padding: 1.1rem 1.3rem;
+      border-radius: 16px 16px 0 0;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    #modal-title {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: var(--white);
+      letter-spacing: 0.04em;
+    }
+
+    #close {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      color: var(--white);
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background var(--transition);
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    #close:hover { background: rgba(255,255,255,0.25); }
+
+    .modal-img-wrap {
+      padding: 1rem 1.3rem 0.5rem;
+      background: var(--gray-100);
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    #modal-img {
+      width: 100%;
+      max-height: 220px;
+      object-fit: contain;
+      border-radius: 8px;
+      display: block;
+    }
+
+    .modal-body {
+      padding: 0.8rem 1.3rem 1.5rem;
+    }
+
+    .modal-pair {
+      margin-bottom: 0.9rem;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1.5px solid var(--gray-200);
+    }
+
+    .modal-pair-header {
+      background: var(--navy-mid);
+      color: var(--white);
+      font-weight: 700;
+      font-size: 0.88rem;
+      padding: 0.6rem 0.9rem;
+      line-height: 1.5;
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-start;
+    }
+
+    .cause-label {
+      background: var(--accent);
+      color: var(--navy);
+      font-size: 0.72rem;
+      font-weight: 900;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      letter-spacing: 0.04em;
+    }
+
+    .modal-pair-solutions {
+      list-style: none;
+      padding: 0.5rem 0.9rem 0.6rem;
+      margin: 0;
+      background: #fafbfc;
+    }
+
+    .modal-pair-solutions li {
+      font-size: 0.87rem;
+      line-height: 1.65;
+      color: var(--navy);
+      padding: 0.3rem 0 0.3rem 1.2rem;
+      position: relative;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .modal-pair-solutions li:last-child { border-bottom: none; }
+
+    .modal-pair-solutions li::before {
+      content: '▶';
+      position: absolute;
+      left: 0;
+      font-size: 0.55rem;
+      color: var(--accent);
+      top: 0.42rem;
+    }
+
+    /* scrollbar */
+    .modal-content::-webkit-scrollbar { width: 4px; }
+    .modal-content::-webkit-scrollbar-track { background: transparent; }
+    .modal-content::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 99px; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 600px) {
+      .header-top { padding: 0.75rem 1rem 0.4rem; }
+      .header-titles h1 { font-size: 1.1rem; }
+      .header-search { padding: 0.5rem 1rem; }
+      .filter-scroll-wrap { padding: 0.45rem 0.8rem 0.6rem; }
+
+      #card-container {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 0.65rem;
+        padding: 0.7rem 0.8rem 3rem;
+      }
+
+      .card img { height: 75px; }
+      .card h3 { font-size: 0.82rem; }
+
+      .modal-content { max-height: 88vh; border-radius: 14px; }
+      #modal-title { font-size: 1rem; }
+      #modal-img { max-height: 160px; }
+      .modal-header { padding: 0.85rem 1rem; border-radius: 14px 14px 0 0; }
+      .modal-body { padding: 0.7rem 1rem 1.3rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="header-titles">
+      <h1>🔍 爪蓋異常快速查閱</h1>
+      <h2>DEFECT QUICK REFERENCE SYSTEM</h2>
+    </div>
+    <span class="header-badge">2022 二版</span>
+  </div>
+
+  <div class="header-search">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="輸入關鍵字搜尋（名稱 / 原因 / 對策）">
+    </div>
+  </div>
+
+  <div class="filter-scroll-wrap">
+    <div id="filters">
+      <button class="filter active" data-type="all">全部</button>
+      <button class="filter" data-type="原物料">原物料</button>
+      <button class="filter" data-type="塗佈">塗佈</button>
+      <button class="filter" data-type="印刷">印刷</button>
+      <button class="filter" data-type="烘烤">烘烤</button>
+      <button class="filter" data-type="半成品">半成品</button>
+      <button class="filter" data-type="上蠟">上蠟</button>
+      <button class="filter" data-type="沖壓">沖壓</button>
+      <button class="filter" data-type="裁剪">裁剪</button>
+      <button class="filter" data-type="預捲">預捲</button>
+      <button class="filter" data-type="捲圓">捲圓</button>
+      <button class="filter" data-type="上膠">上膠</button>
+      <button class="filter" data-type="造粒">造粒</button>
+      <button class="filter" data-type="押出">押出</button>
+      <button class="filter" data-type="封蓋">封蓋</button>
+    </div>
+  </div>
+</header>
+
+<div class="result-info" id="result-info"></div>
+<main id="card-container"></main>
+
+<!-- Modal -->
+<div id="modal" class="hidden">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="modal-title"></h2>
+      <button id="close" aria-label="關閉">&times;</button>
+    </div>
+    <div class="modal-img-wrap">
+      <img id="modal-img" alt="">
+    </div>
+    <div class="modal-body">
+      <div id="modal-pairs"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const defects = [
+    {
+      name: "平坦度不佳",
+      type: "塗佈",
+      img: "images/平坦度不佳.JPG",
+      reason: [
+        "A.高黏度",
+        "B.滾筒"
+      ],
+      solution: [
+        "A1.調整黏度(加入適當稀釋劑)",
+        "B1.建議適合的溶劑或採用較軟的滾筒"
+      ]
+    },
+    {
+      name: "針孔",
+      type: "塗佈",
+      img: "images/針孔.JPG",
+      reason: [
+        "A.塗漆污染",
+        "B.油層或髒粒"
+      ],
+      solution: [
+        "A1.更換新塗漆",
+        "B1.採用適合的溶劑調薄塗漆或預烤鐵材"
+      ]
+    },
+    {
+      name: "火山口",
+      type: "塗佈",
+      img: "images/火山口.JPG",
+      reason: [
+        "A.塗漆污染",
+        "B.油層或髒粒",
+        "C.滑劑沒有分散完全"
+      ],
+      solution: [
+        "A1.更換新塗漆",
+        "B1.採用適合的溶劑調薄塗漆或預烤鐵材",
+        "C1.追加平坦劑"
+      ]
+    },
+    {
+      name: "塗印起泡",
+      type: "塗佈",
+      img: "images/塗印起泡.JPG",
+      reason: [
+        "A.回抽馬達壓力過大",
+        "B.塗漆在管線內流量過小",
+        "C.塗漆生產循環落差過大"
+      ],
+      solution: [
+        "A1.調整回抽馬達壓力或增加管線中塗漆流量",
+        "B1.建議適合溶劑調低黏度",
+        "B2.加設壩條將氣泡與pick-up roller隔開",
+        "C1.控制塗料用量，減少落差產生之氣泡"
+      ]
+    },
+    {
+      name: "背面沾漆",
+      type: "塗佈",
+      img: "images/背面沾漆.JPG",
+      reason: [
+        "A.傳動滾筒太髒",
+        "B.刮刀磨損",
+        "C.刮刀沾附溶劑雜質，造成塗佈上墨時污染",
+        "D.烘烤溫度不足，乾燥不完全"
+      ],
+      solution: [
+        "A1.清洗傳動滾筒",
+        "B1.更換新刮刀",
+        "C1.更換溶劑",
+        "C2.清潔刮刀",
+        "D1.重新設定溫度",
+        "D2.延長烘烤時間"
+      ]
+    },
+    {
+      name: "塗印塗料垂流",
+      type: "塗佈",
+      img: "images/塗印塗料垂流.JPG",
+      reason: [
+        "A.使用揮發性太慢的溶劑",
+        "B.濕漆膜太厚"
+      ],
+      solution: [
+        "A1.減少溶劑使用量或使用高揮發性溶劑",
+        "B1.降低漆膜厚度"
+      ]
+    },
+    {
+      name: "塗印塗料流展性差",
+      type: "塗佈",
+      img: "images/塗印塗料流展性差.JPG",
+      reason: [
+        "A.滾筒不良",
+        "B.黏度不適",
+        "C.塗料儲放太久",
+        "D.塗佈量太高",
+        "E.塗料樹脂固成分過高，影響塗料流展"
+      ],
+      solution: [
+        "A1.採用適當滾筒",
+        "B1.用適當溶劑調整黏度",
+        "C1.依先進先出管理並記錄",
+        "D1.調整塗佈量，以管制塗佈標準厚度",
+        "E1.更換新塗料，並要求協力商進行調整"
+      ]
+    },
+    {
+      name: "塗佈不均",
+      type: "塗佈",
+      img: "images/塗佈不均.JPG",
+      reason: [
+        "A.雙張檢知器感應異常",
+        "B.塗佈輥筒橡膠包覆不良，使底層橡膠不紮實凹陷，造成塗佈不均"
+      ],
+      solution: [
+        "A1.確認調整檢知器若無效，則須更換新檢知器",
+        "B1.印刷塗佈預塗試片時，如遇顏色不均，必須即時更換膠輪並重新調整"
+      ]
+    },
+    {
+      name: "塗佈魚眼",
+      type: "塗佈",
+      img: "images/塗佈魚眼.JPG",
+      reason: [
+        "A.塗料氣泡或外在油氣污染，使表面塗料排斥，造成魚眼現象"
+      ],
+      solution: [
+        "A1.減少塗料氣泡產生，控制攪拌及必要時添加消泡劑"
+      ]
+    },
+    {
+      name: "黑斑點",
+      type: "塗佈",
+      img: "images/黑斑點.JPG",
+      reason: [
+        "A.含硫食物與鐵片作用"
+      ],
+      solution: [
+        "A1.添加氧化鋅或鋁膏，以減緩含硫食物與鐵片作用"
+      ]
+    },
+    {
+      name: "墨皮轉印",
+      type: "印刷",
+      img: "images/墨皮轉印.JPG",
+      reason: [
+        "A.印刷膠輪沾附異物。(如油墨結枷、棉絮、昆蟲等)",
+        "B.油墨黏度大，流動性較差，容易產生墨皮"
+      ],
+      solution: [
+        "A1.行進間需使用刮片剔除異物/停機清潔版面及橡皮布",
+        "B1.了解產品搭配使用，必要時需更換油墨/添加適當調墨油"
+      ]
+    },
+    {
+      name: "套色偏移",
+      type: "印刷",
+      img: "images/套色偏移.JPG",
+      reason: [
+        "A.素材翹曲/波浪/直角度差",
+        "B.咬口、側軌及推進器三點定位偏移"
+      ],
+      solution: [
+        "A1.更換原素材",
+        "B1.重新校正咬口、側軌與推進器三處定位"
+      ]
+    },
+    {
+      name: "印刷色差",
+      type: "印刷",
+      img: "images/印刷色差.JPG",
+      reason: [
+        "A.油墨厚度不均",
+        "B.烘烤爐溫不均"
+      ],
+      solution: [
+        "A1.調整油墨滾筒，使左右兩邊漆膜均一",
+        "B1.重新測試並設定爐溫"
+      ]
+    },
+    {
+      name: "塗印耐溶劑差",
+      type: "印刷",
+      img: "images/塗印耐溶劑差.JPG",
+      reason: [
+        "A.塗佈量太低",
+        "B.塗料沒有烘乾",
+        "C.塗料樹脂物性不耐溶劑"
+      ],
+      solution: [
+        "A1.提高塗佈量",
+        "B1.重新測試並設定爐溫",
+        "C1.更換新塗料使用"
+      ]
+    },
+    {
+      name: "上光不良",
+      type: ["印刷","塗佈","印刷"],
+      img: "images/上光不良.JPG",
+      reason: [
+        "A.底層印刷上色不均(印刷)",
+        "B.塗佈輥筒橡膠包覆不良，使底層橡膠不紮實凹陷，造成光油塗佈不均(塗佈)",
+        "C.印刷油墨乳化(含水量過多)造成印刷平坦性差(印刷)"
+      ],
+      solution: [
+        "A1.檢查前製程印刷上色有無均勻度不佳，必要時須重新調整。",
+        "B1.印刷塗佈預塗試片時，如遇顏色不均，必須即時更換膠輪並重新調整。",
+        "C1.洗車並更換油墨重新調和"
+      ]
+    },
+    {
+      name: "印刷漆膜龜裂",
+      type: "印刷",
+      img: "images/印刷漆膜龜裂.JPG",
+      reason: [
+        "A.塗漆不耐加工"
+      ],
+      solution: [
+        "A1.提高滑劑或硬度調整改善加工性",
+        "A2.調整油墨與塗料搭配。PS：捲圓處用網點表現，並減少此處的墨厚。PS：加工成型漆膜龜裂可能發生原因請參閱漆膜成型龜裂異常項目"
+      ]
+    },
+    {
+      name: "印刷金屬材刮擦傷",
+      type: "印刷",
+      img: "images/印刷金屬材刮擦傷.JPG",
+      reason: [
+        "A.塗佈量太低",
+        "B.滑劑/硬度不足",
+        "C.輸送速度太快",
+        "D.塗料沒有烘乾",
+        "E.烘烤順序錯誤"
+      ],
+      solution: [
+        "A1.提高塗佈量",
+        "B1.添加適量滑劑/使用前攪拌均勻",
+        "C1.調整皮帶/放慢速度",
+        "D1.重新測試並設定爐溫",
+        "E1.重新調整烘烤順序"
+      ]
+    },
+    {
+      name: "印刷脫漆",
+      type: "印刷",
+      img: "images/印刷脫漆.JPG",
+      reason: [
+        "A.鐵皮氧化層或油層過高",
+        "B.烘烤溫度不足不耐加工條件",
+        "C.塗漆不耐加工"
+      ],
+      solution: [
+        "A1.預烤鐵皮",
+        "B1.重新設定溫度",
+        "B2.延長烘烤時間",
+        "C1.提高滑劑或硬度改善加工性"
+      ]
+    },
+    {
+      name: "豎架痕",
+      type: "烘烤",
+      img: "images/豎架痕.JPG",
+      reason: [
+        "A.鋁片平整度不良/豎架不良",
+        "B.鐵架過熱/生鏽/髒污造成",
+        "C.塗料回軟"
+      ],
+      solution: [
+        "A1.管控原料/豎架變形立即更換",
+        "B1.清洗鐵架",
+        "B2.降低升溫區的溫度",
+        "C1.降低烘烤溫度"
+      ]
+    },
+    {
+      name: "蓋面爐灰",
+      type: "烘烤",
+      img: "images/蓋面爐灰.JPG",
+      reason: [
+        "A.烘烤爐內積碳過多，造成爐灰污染"
+      ],
+      solution: [
+        "A1.清潔烘烤爐"
+      ]
+    },
+    {
+      name: "高溫殺菌白化(漆膜霧化)",
+      type: ["塗佈","烘烤","半成品"],
+      img: "images/高溫殺菌白化(漆膜霧化).JPG",
+      reason: [
+        "A.塗料樹脂不耐高溫殺菌(塗佈)",
+        "B.烘烤不足(烘烤)",
+        "C.殺菌水過鹼化(半成品)"
+      ],
+      solution: [
+        "A1.更換耐高溫殺菌塗料。",
+        "B1.測試爐溫及檢視漆膜耐溶劑性。",
+        "C1.殺菌前測定殺菌水pH值"
+      ]
+    },
+    {
+        name: "蓋面刮傷",
+        type: ["上蠟", "沖壓", "裁剪", "預捲"],
+        img: "images/蓋面刮傷.JPG",
+        reason: [
+          "A.印刷鐵皮於運送／搬卸時造成傾倒刮傷。(上蠟)(沖壓)",
+          "B.送料軌道不平整／銳角，於鐵皮輸送時造成刮傷受損。(上蠟)(沖壓)",
+          "C.鐵片下料時風量不足造成鐵皮刮傷。(上蠟)(沖壓)",
+          "D.壓料板有銳角，於鐵皮輸送時造成刮傷受損。(裁剪)",
+          "E.裁剪機下料堆疊時，造成表面刮傷。(裁剪)",
+          "F.沖床壓料磁鐵位置過高，於磁吸送料時造成鐵皮刮傷。(沖壓)",
+      
+          "G.流道內有卡破蓋／異物，造成沖壓後蓋面／蓋緣刮傷。(沖壓)",
+          "H.預捲入口擋蓋裝置太鬆，造成一次掉落兩蓋重疊，導致蓋面刮傷。(預捲)",
+          "I.預捲月眉 A／B／C 面板有毛邊或銳角造成刮傷。(預捲)",
+          "J.預捲出口磁鐵滾輪有銳角造成刮傷。(預捲)",
+          "K.預捲機 C 面板月眉裝反，造成蓋面／蓋緣刮傷。(預捲)"
+        ],
+        solution: [
+          "A1.剔除刮傷／變形之印刷鐵皮。",
+          "B1.清潔送料軌道／軌道表面處理。",
+          "C1.檢查鼓風機是否正常運轉。",
+          "C2.檢查管路閥門及出風量是否適當。",
+          "D1.清潔送料軌道／軌道表面處理。",
+          "E1.調整裁剪下料橫桿角度。",
+          "F1.重新調整壓力磁鐵高度至適當位置。",
+      
+          "G1.排除流道破蓋／異物。",
+          "H1.調整預捲入口擋蓋彈簧至適當緊度避免雙蓋滑落。",
+          "I1.#800 水砂紙研磨毛邊／銳角至平滑。",
+          "J1.#800以上水砂紙研磨拋光，並張貼鐵氟龍膠帶。",
+          "K1.重新正確安裝預捲 C 面板月眉。"
+        ]
+      },{
+        name: "蓋內刮傷",
+        type: ["裁剪", "沖壓"],
+        img: "images/蓋內刮傷.JPG",
+        reason: [
+          "A.送料軌道不平整／銳角，於鐵皮輸送時造成刮傷受損。(裁剪)(沖壓)",
+          "B.印刷鐵皮於運送／搬卸時造成傾倒刮傷。(沖壓)",
+          "C.沖床壓料磁鐵位置過高，於磁吸送料時造成鐵皮刮傷。(沖壓)"
+        ],
+        solution: [
+          "A1.清潔送料軌道／軌道表面處理。",
+          "B1.剔除刮傷／變形之印刷鐵皮。",
+          "C1.重新調整壓料磁鐵高度至適當位置。"
+        ]
+      },{
+        name: "蓋緣刮傷",
+        type: ["上蠟", "裁剪", "沖壓"],
+        img: "images/蓋緣刮傷.JPG",
+        reason: [
+          "A.印刷鐵皮於運送／搬卸時造成傾倒刮傷。(上蠟)(裁剪)(沖壓)",
+          "B.送料軌道不平整／銳角，於鐵皮輸送時造成刮傷受損。(上蠟)(裁剪)(沖壓)",
+          "C.沖床壓料磁鐵位置過高，於磁吸送料時，造成鐵皮刮傷。(沖壓)",
+          "D.流道內有卡破蓋／異物，造成沖壓後蓋面／蓋緣刮傷。(沖壓)"
+        ],
+        solution: [
+          "A1.剔除刮傷／變形之印刷鐵皮。",
+          "B1.清潔送料軌道／軌道表面處理。",
+          "C1.重新調整壓料磁鐵高度至適當位置。",
+          "D1.排除流道內之破蓋／異物。"
+        ]
+      },{
+        name: "沖壓商標歪斜",
+        type: ["裁剪", "沖壓"],
+        img: "images/沖壓商標歪斜.JPG",
+        reason: [
+          "A.分條導軌基準線偏移。(裁剪)",
+          "B.裁切時，鐵皮裁切方向錯誤。(裁剪)",
+          "C.沖床導板間隙位置偏移。(沖壓)",
+          "D.送料爪之間隙調整不均或固定螺絲鬆動，造成商標歪斜。(沖壓)",
+          "E.面板之磁力衰退，造成送料行程不穩定而產生商標歪斜。(沖壓)",
+          "F.廢鐵出料口之磁鐵位置不當，影響出料行程，使沖壓不穩。(沖壓)"
+        ],
+        solution: [
+          "A1.調整校準分條導軌基準線。",
+          "B1.裁切時，確認鐵皮基準面方向是否於後方。",
+          "C1.調整校準導板間隙位置。",
+          "D1.調整送料爪間隙，並鎖緊固定螺絲。",
+          "E1.更換面板之磁鐵。",
+          "F1.調整磁鐵位置，使出料正常。"
+        ]
+      },{
+        name: "破蓋",
+        type: ["原物料", "沖壓"],
+        img: "images/破蓋.JPG",
+        reason: [
+          "A.印刷鐵皮沾附異物（砂粒）／油墨厚薄不均。(原物料)",
+          "B.印刷鐵皮裁切邊料過長。(沖壓)",
+          "C.沖床彈簧壓力不足。(沖壓)",
+          "D.沖床作動不良（輸送帶未作動／風管位置調整不當），造成沖床塞車。(沖壓)",
+          "E.沖床上切口卡屑／R角處銳角，造成沖壓成型破蓋。(沖壓)",
+          "F.沖床下模底部卡屑／髒污，致使沖壓成型時產生破蓋。(沖壓)"
+        ],
+        solution: [
+          "A1.更換新批樣生產。",
+          "B1.重新調整裁切邊料長度／沖床送料推爪位置。",
+          "C1.調整提高彈簧壓力／更換新壓簧。",
+          "D1.開啟輸送帶／調整風管位置。",
+          "E1.清潔排除上切口異物。",
+          "E2.將上切口 (R角) 銳角處進行拋光研磨。",
+          "F1.拆卸壓簧清潔下模底部。"
+        ]
+      },{
+        name: "皺蓋",
+        type: ["原物料", "沖壓"],
+        img: "images/皺蓋.JPG",
+        reason: [
+          "A.印刷鐵皮沾附異物(砂粒)／油墨厚薄不均。(原物料)",
+          "B.上下壓簧太緊／太鬆，造成沖壓過大／不足產生鐵蓋變形。(沖壓)",
+          "C.沖床上切口卡屑／R角處銳角，造成沖壓成型皺蓋刮傷。(沖壓)",
+          "D.沖床下模底部卡屑／髒污，致使沖壓成型時產生皺蓋。(沖壓)"
+        ],
+        solution: [
+          "A1.更換新批樣生產。",
+          "B1.重新調整壓力彈簧至適當鬆緊度。",
+          "C1.清潔排除上切口異物。",
+          "C2.將上切口(R角)銳角處進行拋光研磨。",
+          "D1.拆卸壓簧清潔下模底部。"
+        ]
+      },{
+        name: "肉脯露白",
+        type: ["沖壓", "捲圓"],
+        img: "images/肉脯露白.JPG",
+        reason: [
+          "A.模具內部卡屑／異物。(沖壓)",
+          "B.捲圓模／成形模模具沾附異物。(捲圓)"
+        ],
+        solution: [
+          "A1.清潔排除模具內部異物。",
+          "B1.清潔排除捲圓模／成型模模具內部異物。"
+        ]
+      },{
+        name: "漆膜成型龜裂",
+        type: ["捲圓"],
+        img: "images/漆膜成型龜裂.JPG",
+        reason: [
+          "A.漆膜強度不足，導致成型加工時漆膜龜裂。(捲圓成型)",
+          "B.牙深過深時其漆膜延展性不足，於加工段產生蓋牙漆膜龜裂脫漆。(捲圓成型)",
+          "C.捲圓上模R角不夠光滑，造成加工時漆膜龜裂。(捲圓成型)"
+        ],
+        solution: [
+          "A1.更換新批樣生產。",
+          "A2.成型爪拋光研磨。",
+          "A3.降低烘烤溫度，避免漆膜過度受熱產生龜裂。",
+          "B1.重新調整牙深。",
+          "C1.拆下捲圓模進行研磨拋光。"
+        ]
+      },{
+        name: "蓋牙成型脫漆",
+        type: ["捲圓"],
+        img: "images/蓋牙成型脫漆.JPG",
+        reason: [
+          "A.成型模夾風壓太大，造成脫模時成型爪與蓋體擦傷。(捲圓成型)",
+          "B.成型爪潤滑不足，產生成型爪脫模不順導致蓋牙擦傷。(捲圓成型)",
+          "C.成型爪受損，導致成型時蓋牙脫漆。(捲圓成型)"
+        ],
+        solution: [
+          "A1.降低脫模風壓。",
+          "B1.潤滑成型爪。",
+          "C1.成型爪研磨拋光。"
+        ]
+      },{
+        name: "蓋面凹陷",
+        type: ["捲圓"],
+        img: "images/蓋面凹陷.JPG",
+        reason: [
+          "A.成型主軸風壓不足，造成蓋面凹陷。(捲圓成型)"
+        ],
+        solution: [
+          "A1.檢查成型主軸與風管有無正常接通。",
+          "A2.提高成型主軸風壓。"
+        ]
+      },{
+        name: "未上膠(空蓋)",
+        type: ["上膠"],
+        img: "images/未上膠(空蓋).JPG",
+        reason: [
+          "A.上膠機未開啟作動。",
+          "B.注膠電磁閥作動異常。",
+          "C.上膠站感知器（SENSOR）未作動。",
+          "D.PLC控制器注膠接點異常。",
+          "E.膠槍快速接頭旋牙過深，影響膠針作動不良。",
+          "F.膠針變形 / 作動不良。"
+        ],
+        solution: [
+          "A1.開啟上膠機並檢查作動是否正常。",
+          "B1.更換電磁閥新品。",
+          "C1.重新調整感知器（SENSOR）架設位置 / 更換感知器新品。",
+          "D1.重新接上PLC控制器線路。",
+          "D2.更換PLC控制器注膠接點。",
+          "E1.調整快速接頭旋牙深度。",
+          "F1.更換膠針新品，並重新契合膠針與膠嘴之搭配。",
+          "F2.更換O型環新品。"
+        ]
+      },{
+        name: "交接點過高",
+        type: ["上膠"],
+        img: "images/交接點過高.JPG",
+        reason: [
+          "A.上膠轉速過快，造成注膠接點疊合過高。",
+          "B.PLC控制器注膠接點異常。"
+        ],
+        solution: [
+          "A1.調降上膠轉速。",
+          "B1.調整 / 更換PLC控制器注膠接點。"
+        ]
+      },{
+        name: "斜膠",
+        type: ["上膠"],
+        img: "images/斜膠.JPG",
+        reason: [
+          "A.注膠電磁閥作動異常。",
+          "B.PLC控制器注膠接點異常。",
+          "C.上膠機止滑墊片破損。",
+          "D.甩膠站出口風管位置調整不當，造成環膠溢散。",
+          "E.成型機出口輸送速度過快，造成蓋體於烘烤爐入口處塞車疊蓋產生溢膠。",
+          "F.成型機出口風量過大，造成輸送時疊蓋。"
+        ],
+        solution: [
+          "A1.更換電磁閥新品。",
+          "B1.更換PLC控制器注膠接點。",
+          "C1.更換止滑墊片。",
+          "D1.確認風管風口位置偏移方向，並重新調整適當位置 / 風量。",
+          "E1.降低輸送帶速度。",
+          "A2.確認風管風口位置偏移方向，並重新調整適當位置 / 風量。",
+          "F1.降低成型機出口風量。"
+        ]
+      },{
+        name: "膠缺角",
+        type: ["上膠"],
+        img: "images/膠缺角.JPG",
+        reason: [
+          "A.PLC控制器注膠接點異常。",
+          "B.注膠電磁閥作動異常。",
+          "C.膠槍快速接頭旋牙過深，影響膠針作動不良。",
+          "D.膠針變形 / 作動不良。",
+          "E.上膠轉盤磁力不足，造成注膠偏移。",
+          "F.上膠轉速太慢，造成注膠接合點不完全。",
+          "G.星型轉盤定位不準，造成注膠位置偏移。",
+          "H.甩膠站不織布誤觸環膠。",
+          "I.甩膠站出口風管位置調整不當，造成環膠不完整。"
+        ],
+        solution: [
+          "A1.更換PLC控制器注膠接點。",
+          "B1.更換電磁閥新品。",
+          "C1.重新調整快速接頭旋牙深度。",
+          "D1.更換膠針新品，並重新契合膠針與膠嘴之搭配。",
+          "D2.使用黃油潤滑膠針。",
+          "D3.更換O型環。",
+          "E1.更換上膠轉盤磁鐵。",
+          "F1.調升上膠轉速。",
+          "G1.重新定位星型轉盤。",
+          "H1.調整不織布位置。",
+          "I1.確認風管風口位置偏移方向，並重新調整適當位置 / 風量。"
+        ]
+      },{
+        name: "翻蓋",
+        type: ["上膠","烘烤"],
+        img: "images/翻蓋.JPG",
+        reason: [
+          "A.輸送帶破損或沾附異物，使蓋體輸送不平導致翻蓋。(上膠)",
+          "B.成型機出口輸送速度過快，造成進入烘烤爐時蓋體不穩翻蓋。(上膠)",
+          "C.烘烤爐網沾膠不平整，導致翻蓋。(烘烤)"
+        ],
+        solution: [
+          "A1.清潔排除輸送帶 / 更換輸送帶。",
+          "B1.降低輸送帶速度。",
+          "B2.降低風量，避免蓋體輸送不穩倒蓋。",
+          "C1.清潔排除爐網髒污。"
+        ]
+      },{
+        name: "膠烘烤黃化",
+        type: ["烘烤"],
+        img: "images/膠烘烤黃化.JPG",
+        reason: [
+          "A.爐溫控制器異常。",
+          "B.烘烤爐內沾附 / 卡異物，造成爐網塞車內塗溫度烘烤。",
+          "C.烘烤爐網位置偏移 / 鬆弛，導致爐網停止。",
+          "D.烘烤爐網速度過慢，造成烘烤時間延長。",
+          "E.膠耐溫性不足。"
+        ],
+        solution: [
+          "A1.調降烘烤爐溫度，並確認內塗膠之熟成度是否足夠。",
+          "A2.更換爐溫控制器。",
+          "B1.清潔排除烘烤爐內異物。",
+          "C1.修正偏移之爐網至正確軌道。",
+          "C2.調整爐網至適當緊度。",
+          "D1.可調整爐網速度，但必須確認內塗膠之熟成度是否足夠。",
+          "E1.更換膠批樣生產。"
+        ]
+      },{
+        name: "烘烤油污",
+        type: ["烘烤"],
+        img: "images/烘烤油污.JPG",
+        reason: [
+          "A.烤爐油漬過量，造成爐內油污滴入沾附蓋體"
+        ],
+        solution: [
+          "A1.進行烤爐內部清潔排除。"
+        ]
+      },{
+        name: "烘烤油污",
+        type: ["烘烤"],
+        img: "images/烘烤油污.JPG",
+        reason: [
+          "A.烘烤爐內積碳過多，造成爐灰污染",
+          "B.粉塵過多，於生產時清潔造成揚塵污染"
+        ],
+        solution: [
+          "A1.進行烤爐內部清潔排除。",
+          "B1.禁止生產中進行環境清潔，須於生產結束後再行清潔整理。"
+        ]
+      },{
+        name: "蓋體髒污",
+        type: ["沖壓", "預捲", "捲圓成型", "上膠", "烘烤"],
+        img: "images/蓋體髒污.JPG",
+        reason: [
+          // 來自第 47 頁（沖壓站）
+          "A.沖床模具台面與直立式輸送帶髒污。(沖壓)",
+          "B.沖床面板污染潤滑油，造成送料時污染蓋面。(沖壓)",
+          "C.沖床曲軸及拖板潤滑油過多污染流道，造成蓋面髒污。(沖壓)",
+          "D.預捲機出口磁鐵滾輪沾附髒污。",
+      
+          // 來自第 48 頁（預捲站）
+          "E.預捲機面板髒污。(預捲)",
+          "F.預捲機出口輸送帶髒污。(預捲)",
+      
+          // 捲圓 / 成型站
+          "G.成型碗沾附髒污。(捲圓)",
+          "H.星型轉盤沾附髒污。(捲圓)",
+      
+          // 上膠站
+          "I.上膠／甩膠轉盤髒污。(上膠)",
+      
+          // 烘烤站
+          "J.烘烤爐網髒污沾附蓋體。(烘烤)"
+        ],
+        solution: [
+          // 第 47 頁對策
+          "A1.清潔擦拭沖床模具台面與直立式輸送帶。",
+          "B1.檢視吸料作動連桿組件之潤滑油，並將多餘油漬擦拭／沖床面板擦拭。",
+          "C1.擦拭沖床曲軸及拖板之潤滑油，避免污染流道／擦拭流道。",
+          "C2.檢視自動打油機之打油時間與頻率是否符合現況需求（避免過多／不足）。",
+          "D1.清潔擦拭預捲機出口磁鐵滾輪。",
+      
+          // 第 48 頁對策
+          "E1.擦拭預捲機面板或用水砂紙研磨。",
+          "F1.擦拭預捲機出口輸送帶。",
+          "G1.清潔擦拭成型碗。",
+          "H1.清潔擦拭星型轉盤。",
+          "I1.清潔擦拭上膠／甩膠轉盤。",
+          "J1.清潔擦拭爐網與爐網輪軸。"
+        ]
+      },{
+        name: "膠粒髒污",
+        type: ["造粒"],
+        img: "images/膠粒髒污.JPG",
+        reason: [
+          "A.料管中殘留老化料。",
+          "B.切粒模頭與轉盤出口架刀調整不當，造成轉盤磨損粉屑沾附污染。"
+        ],
+        solution: [
+          "A1.延長排料時間 / 排料量。",
+          "B1.重新調整校正造粒轉盤出口與切粒模頭位置。"
+        ]
+      },{
+        name: "墊片焦化",
+        type: ["押出"],
+        img: "images/墊片焦化.JPG",
+        reason: [
+          "A.料管中殘留老化料。",
+          "B.料管溫度過高。",
+          "C.熔融膠料油污積聚於擋板，於生產時滴落成型輪中。"
+        ],
+        solution: [
+          "A1.延長排料時間 / 排料量。",
+          "B1.降低料管溫度。",
+          "C1.清潔擦拭成型輪上方擋板。"
+        ]
+      },{
+        name: "墊片毛邊",
+        type: ["沖壓"],
+        img: "images/墊片毛邊.JPG",
+        reason: [
+          "A.刀具磨損 / 崩刀，造成沖製後產生毛邊。",
+          "B.PU 墊片磨損 / 更換週期過長，造成沖製時產生毛邊。"
+        ],
+        solution: [
+          "A1.刀具研磨處理 / 更換新刀具。",
+          "B1.更換新PU 墊片。"
+        ]
+      },{
+        name: "墊片折痕",
+        type: ["沖壓"],
+        img: "images/墊片折痕.JPG",
+        reason: [
+          "A.成品撥離時異常，造成積料反折。"
+        ],
+        solution: [
+          "A1.調整收料速度。"
+        ]
+      },{
+        name: "墊片缺料",
+        type: ["沖壓"],
+        img: "images/墊片缺料.JPG",
+        reason: [
+          "A.成捲板片寬度過小，致使沖壓成型不良。",
+          "B.收捲速度 / 位置調整不當。",
+          "C.二次沖壓，造成墊片成型缺角。",
+          "D.沖壓位置間隙 / 沖壓行程調整不當。"
+        ],
+        solution: [
+          "A1.重新調整板片押出之分條徑寬。",
+          "B1.調整收捲速度 / 位置。",
+          "C1.調降彈簧強度。",
+          "D1.重新校正沖壓位置間隙及行程。"
+        ]
+      },{
+        name: "墊片厚度不符",
+        type: ["押出"],
+        img: "images/墊片厚度不符.JPG",
+        reason: [
+          "A.成型軸滾輪轉速過慢。(太厚)",
+          "B.成型軸滾輪轉速過快。(太薄)"
+        ],
+        solution: [
+          "A1.進行成型軸滾輪轉速調整-微調加快並確認厚度變化。",
+          "B1.進行成型軸滾輪轉速調整-微調降速並確認厚度變化。"
+        ]
+      },{
+        name: "墊片破泡",
+        type: ["押出"],
+        img: "images/墊片破泡.JPG",
+        reason: [
+          "A.成型輪間隙過大，導致發泡墊片夾層中氣泡過度擠壓產生破泡情形" 
+        ],
+        solution: [
+          "A1.調整成型輪適當間隙大小。"
+        ]
+      },{
+        name: "歪斜蓋",
+        type: ["封蓋"],
+        img: "images/歪斜蓋.JPG",
+        reason: [
+            "A.導蓋板偏斜。",
+            "B.拾蓋貼過深。",
+            "C.止蓋珠梢彈簧斷裂。",
+            "D.上導板調整太高。",
+            "E.定止器彈簧片壓力過大。",
+            "F.拖曳臂彈簧片壓力過小。",
+            "G.捻蓋橡皮老化，造成作動不良。"
+          ],
+          solution: [
+            "A1.重新校正導蓋板位置。",
+            "B1.調整拾蓋貼位置。",
+            "C1.更換止蓋珠梢彈簧新品。",
+            "D1.重新調降上導板位置。",
+            "E1.調降定止器彈簧片壓力。",
+            "F1.調升拖曳臂彈簧片壓力。",
+            "G1.更換捻蓋橡皮新品。"
+          ]
+        },{
+            name: "浮蓋",
+            type: ["封蓋"],
+            img: "images/浮蓋.JPG",
+            reason: [
+              "A.導蓋板寬度太寬。",
+              "B.定止器彈簧片壓力不足。",
+              "C.拖曳臂彈簧片壓力過大。",
+              "D.拖曳臂角度太大使推送蓋體時碰撞產生。",
+              "E.定止器調太高。",
+              "F.玻璃瓶無對正導蓋板中心。"
+            ],
+            solution: [
+              "A1.修改導蓋板寬度。",
+              "B1.調升定止器彈簧片壓力。",
+              "C1.調降拖曳臂彈簧片壓力。",
+              "D1.調整拖曳臂角度。",
+              "E1.調降定止器高度位置。",
+              "F1.重新調整玻璃瓶推送位置（須將玻璃瓶對正導蓋板中心位置）。"
+            ]
+          },{
+            name: "壓牙",
+            type: ["封蓋"],
+            img: "images/壓牙.JPG",
+            reason: [
+              "A.封蓋定位不良。",
+              "B.封蓋壓力及勾蓋位置不良。",
+              "C.瓶口及爪蓋搭配性不佳。",
+              "D.捻蓋橡皮老化，造成作動不良。",
+              "E.定止器彈簧片壓力過大。",
+              "F.拖曳臂位置偏移／彈簧壓力不足。"
+            ],
+            solution: [
+              "A1.中心點不準，重新調整下蓋位置。",
+              "B1.調整封蓋壓力及機台高度。",
+              "C1.檢查瓶口及爪蓋尺寸。",
+              "D1.更換捻蓋橡皮新品。",
+              "E1.調降定止器彈簧片壓力。",
+              "F1.重新對正拖曳臂位置／調升彈簧壓力。"
+            ]
+          },{
+        name: "過封",
+        type: ["封蓋"],
+        img: "images/過封.JPG",
+        reason: [
+          "A.蓋子預熱不足" ,
+          "B.封蓋靴入口 / 出口調整桿處撞傷蓋體 / 壓力調整過大。"
+        ],
+        solution: [
+          "A1.延長預熱時間。",
+          "B1.調整封蓋靴入口 / 出口調整桿位置 / 降低壓力。"
+        ]
+      },{
+        name: "蓋側刮傷",
+        type: ["封蓋"],
+        img: "images/蓋側刮傷.JPG",
+        reason: [
+          "A.下蓋軌道寬度調整不當。" ,
+          "B.下蓋軌道磨損毛邊，造成輸送時蓋側刮傷。",
+          "C.止蓋珠磨損 / 作動不良。"
+        ],
+        solution: [
+          "A1.調整適合下蓋寬度。",
+          "B1.拆卸下蓋軌道進行拋光 / 更換新品。",
+          "C1.更換止蓋珠。"
+        ]
+      },{
+        name: "蓋體撞傷脫漆",
+        type: ["封蓋"],
+        img: "images/蓋體撞傷脫漆.JPG",
+        reason: [
+          "A.封蓋壓力及勾蓋位置不良。"  ,
+          "B.出、入蓋軌道摩擦。", ,
+          "C. 殺菌時堆疊摩擦。PS：外壓不足造成蓋面凸出增加摩擦強度及面積。",
+        ],
+        solution: [
+          "A1.調整封蓋壓力及機台高度。" ,
+          "B1.檢查軌道有無銳角或輸送不順情形。", 
+          "C1.檢查殺菌條件內外壓是否一致及殺菌用隔板有無磨損表面粗糙情形。"
+        ]
+      },{
+        name: "蓋牙生鏽",
+        type: ["封蓋"],
+        img: "images/蓋牙生鏽.JPG",
+        reason: [
+          "A.瓶口及爪蓋搭配性不良。"  ,
+          "B.封蓋壓力及勾蓋位置不良。", 
+          "C.出、入蓋軌道摩擦。",  
+          "D. 殺菌時堆疊摩擦。PS：外壓不足造成蓋面凸出增加摩擦強度及面積。"
+        ],
+        solution: [
+          "A1.檢查瓶口及爪蓋尺寸。" ,
+          "B1.調整封蓋壓力及機台高度。", 
+          "C1.檢查軌道有無銳角或輸送不順情形。",  
+          "D1.檢查殺菌條件內外壓是否一致及殺菌用隔板有無磨損表面粗糙情形。"
+        ]
+      }
+  ];
+
+const container = document.getElementById("card-container");
+const modal = document.getElementById("modal");
+const modalTitle = document.getElementById("modal-title");
+const modalImg = document.getElementById("modal-img");
+const closeBtn = document.getElementById("close");
+const modalPairs = document.getElementById("modal-pairs");
+const resultInfo = document.getElementById("result-info");
+
+let currentType = "all";
+let keyword = "";
+
+function getTypeLabel(type) {
+  if (Array.isArray(type)) return type[0];
+  return type;
+}
+
+function renderCards(list) {
+  container.innerHTML = "";
+  resultInfo.textContent = `共 ${list.length} 項異常`;
+
+  if (list.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🔎</div><p>找不到符合條件的異常項目</p></div>`;
+    return;
+  }
+
+  list.forEach((d, i) => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.style.animationDelay = `${Math.min(i * 0.03, 0.5)}s`;
+    card.innerHTML = `
+      <img src="${d.img}" alt="${d.name}" loading="lazy" onerror="this.style.display='none'">
+      <div class="card-tag">${getTypeLabel(d.type)}</div>
+      <h3>${d.name}</h3>
+    `;
+    card.onclick = () => openModal(d);
+    container.appendChild(card);
+  });
+}
+
+function openModal(d) {
+  modalTitle.innerText = d.name;
+  modalImg.src = d.img;
+  modalImg.alt = d.name;
+
+  const solutionMap = {};
+  d.solution.forEach(text => {
+    const m = text.match(/^([A-Za-z])/);
+    if (!m) return;
+    const key = m[1];
+    if (!solutionMap[key]) solutionMap[key] = [];
+    solutionMap[key].push(text);
+  });
+
+  let html = "";
+  d.reason.forEach(r => {
+    const m = r.match(/^([A-Za-z])/);
+    const key = m ? m[1] : "";
+    const sols = solutionMap[key] || [];
+    html += `
+      <div class="modal-pair">
+        <div class="modal-pair-header">
+          <span class="cause-label">${key || '?'}</span>
+          <span>${r.replace(/^[A-Za-z]\./, '').trim()}</span>
+        </div>
+        ${sols.length ? `<ul class="modal-pair-solutions">${sols.map(s => `<li>${s}</li>`).join("")}</ul>` : ""}
+      </div>
+    `;
+  });
+
+  modalPairs.innerHTML = html;
+  modal.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+}
+
+function closeModal() {
+  modal.classList.add("hidden");
+  document.body.style.overflow = "";
+}
+
+modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+closeBtn.addEventListener("click", closeModal);
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+
+function applyFilter() {
+  const kw = keyword.trim().toLowerCase();
+  const list = defects.filter(d => {
+    let matchType = currentType === "all" ||
+      (Array.isArray(d.type) ? d.type.includes(currentType) : d.type === currentType);
+    const text = (d.name || "") + " " +
+      (Array.isArray(d.reason) ? d.reason.join(" ") : "") + " " +
+      (Array.isArray(d.solution) ? d.solution.join(" ") : "");
+    const matchKeyword = !kw || text.toLowerCase().includes(kw);
+    return matchType && matchKeyword;
+  });
+  renderCards(list);
+}
+
+document.querySelectorAll(".filter").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll(".filter").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentType = btn.dataset.type;
+    applyFilter();
+  };
+});
+
+const searchInput = document.getElementById("search-input");
+if (searchInput) {
+  searchInput.addEventListener("input", () => {
+    keyword = searchInput.value;
+    applyFilter();
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => { applyFilter(); });
+applyFilter();
+</script>
+</body>
+</html>

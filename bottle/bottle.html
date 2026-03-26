@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>吹瓶異常快速查閱</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0a1628;
+      --navy-mid: #112240;
+      --navy-light: #1a3a5c;
+      --accent: #e8a020;
+      --accent-light: #f5bb4a;
+      --accent-dim: rgba(232, 160, 32, 0.15);
+      --white: #ffffff;
+      --gray-100: #f0f2f5;
+      --gray-200: #e2e6ec;
+      --gray-400: #8a98ab;
+      --gray-600: #4a5568;
+      --danger: #e05252;
+      --success: #38b28a;
+      --card-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      --card-hover-shadow: 0 12px 40px rgba(0,0,0,0.15);
+      --transition: 0.22s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+      background: var(--gray-100);
+      color: var(--navy);
+      min-height: 100vh;
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      background: var(--navy);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 1.5rem 0.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .header-titles h1 {
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: var(--white);
+      letter-spacing: 0.04em;
+    }
+
+    .header-titles h2 {
+      font-size: 0.72rem;
+      font-weight: 400;
+      color: var(--gray-400);
+      letter-spacing: 0.06em;
+      margin-top: 2px;
+    }
+
+    .header-badge {
+      background: var(--accent);
+      color: var(--navy);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.25rem 0.7rem;
+      border-radius: 99px;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    /* Search */
+    .header-search {
+      padding: 0.6rem 1.5rem;
+    }
+
+    .search-wrap {
+      position: relative;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray-400);
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+    #search-input {
+      width: 100%;
+      padding: 0.65rem 1rem 0.65rem 2.6rem;
+      font-size: 0.9rem;
+      font-family: inherit;
+      border-radius: 999px;
+      border: 1.5px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.07);
+      color: var(--white);
+      outline: none;
+      transition: border-color var(--transition), background var(--transition);
+    }
+
+    #search-input::placeholder { color: var(--gray-400); }
+    #search-input:focus {
+      border-color: var(--accent);
+      background: rgba(255,255,255,0.11);
+    }
+
+    /* Filter Pills */
+    .filter-scroll-wrap {
+      overflow-x: auto;
+      padding: 0.55rem 1rem 0.7rem;
+      scrollbar-width: none;
+    }
+    .filter-scroll-wrap::-webkit-scrollbar { display: none; }
+
+    #filters {
+      display: flex;
+      gap: 0.45rem;
+      width: max-content;
+    }
+
+    .filter {
+      padding: 0.38rem 0.9rem;
+      font-size: 0.82rem;
+      font-family: inherit;
+      font-weight: 500;
+      border: 1.5px solid rgba(255,255,255,0.15);
+      border-radius: 99px;
+      background: transparent;
+      color: rgba(255,255,255,0.7);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all var(--transition);
+      letter-spacing: 0.02em;
+    }
+
+    .filter:hover {
+      background: rgba(255,255,255,0.1);
+      color: var(--white);
+      border-color: rgba(255,255,255,0.3);
+    }
+
+    .filter.active {
+      background: var(--accent);
+      color: var(--navy);
+      border-color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* Result count */
+    .result-info {
+      padding: 0.7rem 1.5rem 0.2rem;
+      font-size: 0.78rem;
+      color: var(--gray-600);
+      letter-spacing: 0.02em;
+    }
+
+    /* ─── CARDS ─── */
+    #card-container {
+      padding: 0.8rem 1rem 3rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 0.8rem;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 0.7rem 0.6rem 0.8rem;
+      cursor: pointer;
+      text-align: center;
+      box-shadow: var(--card-shadow);
+      transition: transform var(--transition), box-shadow var(--transition);
+      border: 1.5px solid transparent;
+      animation: cardFadeIn 0.3s ease both;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @keyframes cardFadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transition: transform var(--transition);
+      transform-origin: left;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--card-hover-shadow);
+      border-color: var(--accent-light);
+    }
+
+    .card:hover::before { transform: scaleX(1); }
+
+    .card img {
+      width: 100%;
+      height: 90px;
+      object-fit: contain;
+      border-radius: 6px;
+      background: var(--gray-100);
+      margin-bottom: 0.5rem;
+    }
+
+    .card-tag {
+      display: inline-block;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+      background: var(--accent-dim);
+      padding: 0.1rem 0.45rem;
+      border-radius: 4px;
+      margin-bottom: 0.3rem;
+    }
+
+    .card h3 {
+      font-size: 0.88rem;
+      font-weight: 700;
+      line-height: 1.4;
+      color: var(--navy);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Empty state */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 4rem 1rem;
+      color: var(--gray-400);
+    }
+
+    .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .empty-state p { font-size: 0.95rem; }
+
+    /* ─── MODAL ─── */
+    #modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 10, 20, 0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      z-index: 9999;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    #modal.hidden { display: none !important; }
+
+    .modal-content {
+      background: var(--white);
+      width: 100%;
+      max-width: 600px;
+      border-radius: 16px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.35);
+      animation: modalSlideUp 0.28s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    @keyframes modalSlideUp {
+      from { opacity: 0; transform: translateY(30px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-header {
+      background: var(--navy);
+      padding: 1.1rem 1.3rem;
+      border-radius: 16px 16px 0 0;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    #modal-title {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: var(--white);
+      letter-spacing: 0.04em;
+    }
+
+    #close {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      color: var(--white);
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background var(--transition);
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    #close:hover { background: rgba(255,255,255,0.25); }
+
+    .modal-img-wrap {
+      padding: 1rem 1.3rem 0.5rem;
+      background: var(--gray-100);
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    #modal-img {
+      width: 100%;
+      max-height: 220px;
+      object-fit: contain;
+      border-radius: 8px;
+      display: block;
+    }
+
+    .modal-body {
+      padding: 0.8rem 1.3rem 1.5rem;
+    }
+
+    .modal-pair {
+      margin-bottom: 0.9rem;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1.5px solid var(--gray-200);
+    }
+
+    .modal-pair-header {
+      background: var(--navy-mid);
+      color: var(--white);
+      font-weight: 700;
+      font-size: 0.88rem;
+      padding: 0.6rem 0.9rem;
+      line-height: 1.5;
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-start;
+    }
+
+    .cause-label {
+      background: var(--accent);
+      color: var(--navy);
+      font-size: 0.72rem;
+      font-weight: 900;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      letter-spacing: 0.04em;
+    }
+
+    .modal-pair-solutions {
+      list-style: none;
+      padding: 0.5rem 0.9rem 0.6rem;
+      margin: 0;
+      background: #fafbfc;
+    }
+
+    .modal-pair-solutions li {
+      font-size: 0.87rem;
+      line-height: 1.65;
+      color: var(--navy);
+      padding: 0.3rem 0 0.3rem 1.2rem;
+      position: relative;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .modal-pair-solutions li:last-child { border-bottom: none; }
+
+    .modal-pair-solutions li::before {
+      content: '▶';
+      position: absolute;
+      left: 0;
+      font-size: 0.55rem;
+      color: var(--accent);
+      top: 0.42rem;
+    }
+
+    /* scrollbar */
+    .modal-content::-webkit-scrollbar { width: 4px; }
+    .modal-content::-webkit-scrollbar-track { background: transparent; }
+    .modal-content::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 99px; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 600px) {
+      .header-top { padding: 0.75rem 1rem 0.4rem; }
+      .header-titles h1 { font-size: 1.1rem; }
+      .header-search { padding: 0.5rem 1rem; }
+      .filter-scroll-wrap { padding: 0.45rem 0.8rem 0.6rem; }
+
+      #card-container {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 0.65rem;
+        padding: 0.7rem 0.8rem 3rem;
+      }
+
+      .card img { height: 75px; }
+      .card h3 { font-size: 0.82rem; }
+
+      .modal-content { max-height: 88vh; border-radius: 14px; }
+      #modal-title { font-size: 1rem; }
+      #modal-img { max-height: 160px; }
+      .modal-header { padding: 0.85rem 1rem; border-radius: 14px 14px 0 0; }
+      .modal-body { padding: 0.7rem 1rem 1.3rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="header-titles">
+      <h1>🔍 吹瓶異常快速查閱</h1>
+      <h2>DEFECT QUICK REFERENCE SYSTEM</h2>
+    </div>
+    <span class="header-badge">2022 二版</span>
+  </div>
+
+  <div class="header-search">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="輸入關鍵字搜尋（名稱 / 原因 / 對策）">
+    </div>
+  </div>
+
+  <div class="filter-scroll-wrap">
+    <div id="filters">
+     <button class="filter active" data-type="all">全部</button>
+    <button class="filter" data-type="吹瓶">吹瓶</button>
+    <button class="filter" data-type="入庫">入庫</button>
+    <button class="filter" data-type="測漏">測漏</button>
+    <button class="filter" data-type="套標">套標</button>
+    <button class="filter" data-type="貼標">貼標</button>
+    <button class="filter" data-type="堆疊">堆疊</button>
+    </div>
+  </div>
+</header>
+
+<div class="result-info" id="result-info"></div>
+<main id="card-container"></main>
+
+<!-- Modal -->
+<div id="modal" class="hidden">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="modal-title"></h2>
+      <button id="close" aria-label="關閉">&times;</button>
+    </div>
+    <div class="modal-img-wrap">
+      <img id="modal-img" alt="">
+    </div>
+    <div class="modal-body">
+      <div id="modal-pairs"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const defects = [
+    {
+      name: "瓶身白化",
+      type: "吹瓶",
+      img: "images/瓶身白化.JPG",
+      reason: [
+        "A.瓶胚胚身霧化不良，造成PET瓶吹製拉伸時加重白化現象。",
+        "B.OVEN加熱爐溫度過高，造成過度加熱產生霧化。"
+      ],
+      solution: [
+        "A1.更換瓶胚批生產。",
+        "B1.降低OVEN加熱爐燈管功率。",
+        "B2.增加鼓風功率。"
+      ]
+    },{
+        name: "瓶口撞傷",
+        type: "吹瓶",
+        img: "images/瓶口撞傷.JPG",
+        reason: [
+          "A.瓶胚入模時位置偏移，造成吹嘴撞傷瓶口端面。",
+          "B.吹瓶氣缸作動異常。",
+          "C.吹嘴電磁閥作動異常。",
+          "D.吹嘴變形導致瓶口壁撞傷。"
+        ],
+        solution: [
+          "A1.確認撞傷位置是否為連續性，若為連續時須檢查吹嘴位置，並重新調整瓶胚入模位置與吹嘴高度。",
+          "B1.更換吹瓶汽缸新品。",
+          "C1.更換吹嘴電磁閥新品。",
+          "D1.更換新吹嘴與套件。"
+        ]
+      },{
+        name: "瓶頸漲大",
+        type: "吹瓶",
+        img: "images/瓶頸漲大.JPG",
+        reason: [
+          "A.瓶胚支撐環處結晶不完全，造成高壓吹製時瓶頸漲大。",
+          "B.瓶口 / 支撐環處受熱，造成吹瓶時瓶頸漲大。",
+          "C.冷卻塊失效，造成冷卻不良。(冰水管路阻塞)。"
+        ],
+        solution: [
+          "A1.更換新瓶胚批生產。",
+          "B1.拆模清潔保養。",
+          "B2.降低瓶口溫度。",
+          "B3.重新校正冷卻塊位置。(上下及前後間距至少2mm)。",
+          "C1.確認冷卻水溫度。",
+          "C2.拆模清潔水路 / 更換冷卻水管新品。"
+        ]
+      },{
+        name: "高度過高",
+        type: "吹瓶",
+        img: "images/高度過高.JPG",
+        reason: [
+          "A.模具溫度過低。",
+          "B.模身高度墊片過高。",
+          "C.延伸桿上升角度過大，造成排氣過慢。",
+          "D.冷卻時間太長。"
+        ],
+        solution: [
+          "A1.提高模具溫度。",
+          "B1.調降模身高度墊片。",
+          "C1.確認延伸桿上升角度，並調整排氣時間使其提早排氣，降低過度吹漲。",
+          "D1.縮短冷卻時間。"
+        ]
+      },{
+        name: "容量過高",
+        type: ["吹瓶","入庫"],
+        img: "images/容量過高.JPG",
+        reason: [
+          "A.模具溫度過低於PET吹製程成型時產生容積過大，造成容量過高。",
+          "B.視窗(Panel)墊片過薄，造成吹製成型時容量過高。",
+          "C.冷卻時間過長，造成吹瓶脹大容量過高。",
+          "D.OVEN加熱爐溫度過高，造成過度加熱產生霧化。",
+          "E.預留空瓶因儲放時間造成瓶縮使容量不足。(入庫)"
+        ],
+        solution: [
+          "A1.提高模具溫度。",
+          "B1.調整視窗(Panel)墊片之厚薄差異。",
+          "C1.降低延伸桿上升角度，並縮短冷卻時間。",
+          "D1.降低OVEN加熱爐燈管功率。",
+          "D2.增加鼓風功率。",
+          "E1.空瓶進行儲存測試，確認瓶縮比率，再跟業務將檢討修改新鮮瓶容量規範。"
+        ]
+      },{
+        name: "容量過低",
+        type: "吹瓶",
+        img: "images/容量過低.JPG",
+        reason: [
+          "A.瓶胚置放時間過久影響含水率，造成 PET吹製不穩定。",
+          "B.模具溫度過高於PET吹製程成型時產生容積過小，造成容量過低。",
+          "C.視窗(Panel)墊片過厚，造成吹製成型時容量過低。",
+          "D.冷卻時間過短，造成吹瓶容積小導致容量過低。",
+          "E.OVEN溫度過高，導致瓶縮容量不足。"
+        ],
+        solution: [
+          "A1.更換新瓶胚批生產。",
+          "B1.降低模具溫度。",
+          "C1.調整視窗(Panel)墊片之厚薄差異。",
+          "D1.提高延伸桿上升角度，並延長冷卻時間。",
+          "E1.調整降低OVEN溫度。"
+        ]
+      },{
+        name: "中心點偏移",
+        type: "吹瓶",
+        img: "images/中心點偏移.JPG",
+        reason: [
+          "A.瓶胚塑料分佈不均使厚薄差異過大，造成吹瓶中心點偏移。",
+          "B.瓶胚底部加熱功率過大。",
+          "C.預吹壓力過大，造成預吹成型時已偏移。",
+          "D.預吹角度過早，造成預吹瓶塑料分佈不均。",
+          "E.延伸桿歪斜，導致PET瓶成型時偏移吹漲。",
+          "F.延伸桿與底模間隙位置調整不當。",
+          "G.延伸桿氣缸作動不良，造成吹瓶拉伸過度產生中心偏移。",
+          "H.吹瓶機OVEN自轉鏈條鬆脫。"
+        ],
+        solution: [
+          "A1.PET吹製成型時，重新調整吹瓶瓶身塑料分佈位置 / 更換新瓶胚批生產。",
+          "B1.降低OVEN加熱爐底部區燈管功率。",
+          "C1.降低預吹壓力。",
+          "D1.延後預吹角度。",
+          "E1.進行延伸桿位置矯正 / 更換延伸桿。",
+          "F1.重新調整校正底模間隙。",
+          "G1.重新調整延伸桿氣缸 / 更換電磁閥新品。",
+          "G2.檢查延伸桿導軌間隙。(0.15~0.25m/m)。",
+          "H1.鏈條固鎖。"
+        ]
+      },{
+        name: "凸底",
+        type: "吹瓶",
+        img: "images/凸底.JPG",
+        reason: [
+          "A.底模模具溫度過高，造成吹製時PET瓶底部凸出。",
+          "B.底模模具受損，於PET瓶吹漲時造成底部塑料黏模。",
+          "C.PUSH UP電磁閥作動不良。"
+        ],
+        solution: [
+          "A1.降低底模模具溫度。",
+          "B1.更換底模模具。",
+          "C1.更換PUSH UP電磁閥。"
+        ]
+      },{
+        name: "瓶底破洞",
+        type: "吹瓶",
+        img: "images/瓶底破洞.JPG",
+        reason: [
+          "A.瓶胚注口針孔，造成吹瓶破洞。",
+          "B.底模 / 模具受損 (銳角)，於PET瓶吹漲時造成底部塑料黏模破瓶。。"
+        ],
+        solution: [
+          "A1.更換瓶胚批生產。",
+          "B1.進行底模 / 模具研磨拋光處理。",
+          "B2.更換模具 / 底模新品。"
+        ]
+      },{
+        name: "瓶底皺褶",
+        type: "吹瓶",
+        img: "images/瓶底皺褶.JPG",
+        reason: [
+          "A.瓶胚溫度過高 / 過低。",
+          "B.預吹壓力過小。",
+          "C.預吹流量閥鬆脫，導致預吹壓力流量不足。",
+          "D.吹嘴作動異常 / 過慢，導致預吹壓力不足。(壓力洩漏)。",
+          "E.延伸桿與底模間隙過小，造成延伸桿碰撞底模產生皺褶。"
+        ],
+        solution: [
+          "A1.調整OVEN加熱爐，適度提高 / 降低燈管功率，以提高 / 降低胚溫。",
+          "B1.提高預吹壓力。",
+          "C1.調升預吹流量並固鎖，若遇無法鎖緊時須更換調壓閥。",
+          "D1.更換吹嘴電磁閥。",
+          "D2.更換吹瓶氣缸。",
+          "D3.重新校正吹嘴高度。",
+          "E1.重新調整校正底模與延伸桿之間間隙大小(1.5m/m)。"
+        ]
+      },{
+        name: "破瓶",
+        type: "吹瓶",
+        img: "images/破瓶.JPG",
+        reason: [
+          "A.瓶胚底部霧化，於吹製時塑料不易拉伸導致底部破洞。",
+          "B.延伸桿與底模間隙過小，造成吹瓶破洞。",
+          "C.延伸桿(Stop)鬆脫，導致吹瓶拉伸過度產生破洞。",
+          "D.延伸桿無法正常延伸(未作動)，導致直接吹製破瓶。",
+          "E.預吹製程無作動，導致直接吹製破瓶。",
+          "F.底模 / 模具受損 (銳角)，於PET瓶吹漲時造成底部塑料黏模破瓶。",
+          "G.排氣閥故障，造成空瓶內壓力無法排除產生破瓶。",
+          "H.瓶胚底部塑料厚度不足。",
+          "I.預吹角度過早，造成吹漲過度破洞。",
+          "J.預吹壓力過大。"
+        ],
+        solution: [
+          "A1.更換瓶胚批生產。",
+          "B1.重新調整校正底模與延伸桿之間間隙大小(1.5m/m)。",
+          "C1.進行延伸桿(Stop)固鎖並重新校正高度位置。",
+          "D1.更換作動電磁閥。",
+          "D2.更換訊號線。",
+          "D3.更換延伸桿氣缸。",
+          "E1.更換預吹電磁閥。",
+          "E2.更換訊號線。",
+          "F1.進行底模 / 模具研磨拋光處理。",
+          "F2.更換模具 / 底模新品。",
+          "G1.檢查排氣訊號線。",
+          "G2.更換新排氣電磁閥。",
+          "H1.PET吹製成型時，重新調整吹瓶瓶身塑料分佈位置。",
+          "I1.延後預吹角度。",
+          "J1.降低預吹壓力。"
+        ]
+      },{
+        name: "瓶頸(肩)燙傷",
+        type: "吹瓶",
+        img: "images/瓶頸(肩)燙傷.JPG",
+        reason: [
+          "A.吹瓶氣缸吹嘴中心偏移，導致吹瓶時PET瓶瓶頸燙傷。",
+          "B.夾具與模具角度錯位偏移，造成瓶頸燙傷。",
+          "C.吹製後黏模。"
+        ],
+        solution: [
+          "A1.重新調整校正吹瓶氣缸吹嘴中心。",
+          "B1.檢查夾具與模具角度位置，並調整吹瓶機使之同步。",
+          "C1.噴灑微量離型劑。"
+        ]
+      },{
+        name: "瓶肩縮頭",
+        type: "吹瓶",
+        img: "images/瓶肩縮頭.JPG",
+        reason: [
+          "A.瓶胚溫度過低 / 模溫過高，導致吹製時熱塑型不佳。",
+          "B.預吹壓力流量過小。",
+          "C.冷卻時間不足。",
+          "D.冷卻效果不佳。"
+        ],
+        solution: [
+          "A1.提高瓶胚溫度 / 降低模具溫度。",
+          "B1.提高預吹壓力流量。",
+          "C1.延長冷卻時間。",
+          "D1.更換延伸桿 / 冷卻電磁閥 / 排氣消音器。"
+        ]
+      },{
+        name: "出瓶夾傷",
+        type: "吹瓶",
+        img: "images/出瓶夾傷.JPG",
+        reason: [
+          "A.出瓶夾具裝置位置錯誤，導致夾取位置錯誤造成瓶頸刮傷。",
+          "B.吹瓶機設定未同步。"
+        ],
+        solution: [
+          "A1.調整更換出瓶夾具裝置位置。",
+          "B1.重新調整吹瓶機同步。"
+        ]
+      },{
+        name: "歪頭",
+        type: "吹瓶",
+        img: "images/歪頭.JPG",
+        reason: [
+          "A.瓶胚支撐環下方長晶長度不平均，導致吹瓶後歪頭。",
+          "B.第一區燈管功率過熱，使瓶頸下方塑料軟化，造成吹漲不均。",
+          "C.模托高度墊片磨損，造成錯模歪頭。",
+          "D.冷卻塊高度過低。",
+          "E.單邊油管阻塞 / 快接頭阻塞。"
+        ],
+        solution: [
+          "A1.提高預吹角度 / 更換新瓶胚批生產。",
+          "B1.降低第一區燈管功率。",
+          "C1.更換模托高度墊片並重新校正高度水平。",
+          "D1.調高冷卻塊高度。",
+          "E1.清潔更換油管 / 更換快速接頭。"
+        ]
+      },{
+        name: "瓶肩凹陷",
+        type: "吹瓶",
+        img: "images/瓶肩凹陷.JPG",
+        reason: [
+          "A.預吹角度過晚，造成吹漲不完全產生變形。",
+          "B.預吹壓力不足。",
+          "C.延伸桿排氣孔阻塞，造成排氣不良瓶肩凹陷。",
+          "D.延伸桿使用錯誤，造成瓶身塑料吹瓶不完全產生凹陷變形。",
+          "E.模具溫度過高，造成冷卻不足產生瓶肩凹陷。",
+          "F.瓶肩加熱功率過高。",
+          "G.模具排氣孔阻塞，造成排氣不良產生PET瓶肩變形。",
+          "H.排氣消音器阻塞。",
+          "I.冷卻時間不足。",
+          "J.入胚溫度過高。"
+        ],
+        solution: [
+          "A1.提早預吹角度。",
+          "B1.提高預吹壓力。",
+          "C1.清潔保養延伸桿排氣孔。",
+          "D1.更換延伸桿。",
+          "E1.降低模具溫度。",
+          "F1.調整降低瓶肩處之加熱功率。",
+          "G1.清潔保養排氣孔。",
+          "H1.更換排氣消音器。",
+          "I1.提高冷卻時間。",
+          "J1.重新調整入胚溫度。"
+        ]
+      },
+    {
+      name: "瓶身露點",
+      type: "吹瓶",
+      img: "images/瓶身露點.JPG",
+      reason: [
+        "A.OVEN黑水管鏽蝕，造成水份噴濺",
+        "B.冷卻塊水管破損，造成水份沾附PET瓶身，形成冷卻露點不良",
+        "C.冷卻塊溫度過低",
+        "D.模具溫度過低，導致模具結露"
+      ],
+      solution: [
+        "A1.更換OVEN黑水管。",
+        "B1.更換冷卻塊水管",
+        "C1.提高冰水溫度",
+        "D1.提高模具溫度"
+      ]
+    },
+    {
+      name: "耐熱不良",
+      type: "吹瓶",
+      img: "images/耐熱不良.JPG",
+      reason: [
+        "A.預吹 / 排氣 / 冷卻 / 吹瓶電磁閥未清潔阻塞。",
+        "B.補償壓力墊片磨損。",
+        "C.吹嘴電磁閥阻塞。",
+        "D.模具溫度不足。",
+        "E.模溫機濾網髒污 / 阻塞。",
+        "F.延伸桿作動不良，造成吹瓶拉伸過度，視窗(Panel)塑料厚度不足。",
+        "G.PET瓶身塑料塑料分佈不均。",
+        "H.油管 / 油管快接阻塞，造成PET瓶吹製時模身受熱不均。",
+        "I.冷卻時間過長。"
+      ],
+      solution: [
+        "A1.拆模清潔預吹 / 排氣 / 冷卻 / 吹瓶電磁閥。",
+        "B1.更換補償壓力墊片。",
+        "C1.拆模清潔吹嘴電磁閥。",
+        "D1.調升模具溫度。",
+        "E1.檢查模溫機(模身)流量 / 壓力有無正常，如壓力過高時須進行更換模溫機(模身)濾網。(流量需>7.0 m3/h，壓力需<4.5 bar)。",
+        "F1.延伸桿位置矯正 / 更換延伸桿。",
+        "G1.量測確認瓶身厚度有無差異過大情形，並重新進行塑料分佈製程設定。",
+        "H1.檢查油管 / 油管快接有無阻塞，必要時須進行油管 / 油管快接更換新品。",
+        "I1.降低冷卻時間，以延長吹瓶時間。"
+      ]
+    },
+    {
+      name: "負壓不良",
+      type: "吹瓶",
+      img: "images/負壓不良.JPG",
+      reason: [
+        "A.預吹壓力過大(點偏)。",
+        "B.延伸桿作動歪斜，導致PET瓶成型時偏移吹漲。",
+        "C.PET瓶身塑料塑料分佈不均。",
+        "D.視窗(Panel)墊片過薄，造成吹製成型時視窗骨架強度不足。"
+      ],
+      solution: [
+        "A1.降低預吹壓力",
+        "B1.延伸桿位置矯正 / 更換延伸桿",
+        "C1.量測確認瓶身厚度有無差異過大情形，並重新進行塑料分佈製程設定",
+        "D1.增加視窗(Panel)墊片厚度"
+      ]
+    },
+    {
+      name: "瓶口壓傷",
+      type: "測漏",
+      img: "images/瓶口壓傷.JPG",
+      reason: [
+        "A.測漏機測漏頭無加裝PE墊片，於測漏下壓瓶口時無緩衝，造成瓶口壓傷變形。"
+      ],
+      solution: [
+        "A1.加裝測漏頭上方之PE墊片。"
+      ]
+    },
+    {
+      name: "套標偏移",
+      type: "套標",
+      img: "images/套標偏移.JPG",
+      reason: [
+        "A.標籤折距過大 / 過小。",
+        "B.收縮爐溫度過高，造成收縮皺標版面偏移。"
+      ],
+      solution: [
+        "A1.調整下標角度與毛刷位置。",
+        "B1.降低收縮爐溫度。"
+      ]
+    },
+    {
+      name: "標籤內折",
+      type: "套標",
+      img: "images/標籤內折.JPG",
+      reason: [
+        "A.膜紙收縮性不良。",
+        "B.收縮爐溫度過高，造成收縮皺標版面內折。"
+      ],
+      solution: [
+        "A1.更換新標籤批生產。",
+        "B1.降低收縮爐溫度。",
+        "B2.降低熱風槍溫度 / 調整熱風槍角度。"
+      ]
+    },
+    {
+      name: "套標未定位",
+      type: "套標",
+      img: "images/套標未定位.JPG",
+      reason: [
+        "A.標籤折徑過小。",
+        "B.套標之中心柱(砲彈頭)尺寸過小，導致標籤未能完全展開。",
+        "C.標籤下標未定位。",
+        "D.定位皮帶位置不良。",
+        "E.輸送帶與皮帶作動速度未同步。"
+      ],
+      solution: [
+        "A1.更換新標籤批生產。",
+        "B1.更換適合尺寸之中心柱(砲彈頭)。",
+        "C1.確認並調整下標電眼位置。",
+        "C2.調整下標輪軸速率。",
+        "D1.調整皮帶寬度間距。",
+        "E1.調整皮帶作動速率。"
+      ]
+    },
+    {
+      name: "貼標偏移",
+      type: "貼標",
+      img: "images/貼標偏移.JPG",
+      reason: [
+        "A.水平儀角度調整不當，造成標籤頭尾歪斜。",
+        "B.標籤長度裁切不良。(太長 / 太短)。",
+        "C.切刀鼓有異物，導致標籤無法緊密吸附。",
+        "D.抹平板未水平對應，導致標籤抹黏時歪斜。",
+        "E.真空鼓膠塊受損，導致膠水未平均抹黏。"
+      ],
+      solution: [
+        "A1.重新校正水平儀。",
+        "B1.校正標籤裁切長度。",
+        "C1.清潔切刀鼓。",
+        "D1.調整抹平板。",
+        "E1.更換膠塊。"
+      ]
+    },
+    {
+      name: "標籤破裂",
+      type: "堆疊",
+      img: "images/標籤破裂.JPG",
+      reason: [
+        "A.空氣輸送帶風力過大。",
+        "B.空氣輸送帶毛刷脫落。",
+        "C.牙插位置調整不當。"
+      ],
+      solution: [
+        "A1.調整風力。",
+        "B1.更換毛刷。",
+        "C1.重新調整牙插位置。"
+      ]
+    },
+    {
+      name: "防盜環撞傷",
+      type: "吹瓶",
+      img: "images/防盜環撞傷.JPG",
+      reason: [
+        "A.入胚後瓶口防盜環與入胚轉盤三角塊接觸造成撞傷情形。",
+        "B.出入瓶夾具同步異常造成撞傷。"
+      ],
+      solution: [
+        "A1.研磨入胚轉盤三角塊銳角處。",
+        "A2.更換入胚夾具總成銅套。",
+        "B.重新校正夾具。。"
+      ]
+    },
+    {
+      name: "瓶身凹陷",
+      type: "吹瓶",
+      img: "images/瓶身凹陷.JPG",
+      reason: [
+        "A.模具不適用。",
+        "B.空輸系統風量過大。"
+      ],
+      solution: [
+        "A.開發新模具。",
+        "B.調整風量(40Hz~55Hz)"
+      ]
+    },
+    {
+      name: "瓶身刮傷",
+      type: "吹瓶",
+      img: "images/瓶身刮傷.JPG",
+      reason: [
+        "A.出瓶導軌位置調整不當。",
+        "B.出瓶轉盤出瓶處太尖銳。"
+      ],
+      solution: [
+        "A.調整吹瓶機出瓶導軌高度。",
+        "B.研磨銳角。"
+      ]
+    },
+    {
+      name: "貼標皺褶",
+      type: "貼標",
+      img: "images/貼標皺褶.JPG",
+      reason: [
+        "A.皮帶過鬆造成貼標標籤皺褶。"
+      ],
+      solution: [
+        "A.調整皮帶鬆緊度。"
+      ]
+    },
+    {
+      name: "瓶底擦傷",
+      type: "吹瓶",
+      img: "images/瓶底擦傷.JPG",
+      reason: [
+        "A.輸送帶局部銳角。"
+      ],
+      solution: [
+        "A.將輸送帶銳角處研磨。"
+      ]
+    }
+  ];
+
+const container = document.getElementById("card-container");
+const modal = document.getElementById("modal");
+const modalTitle = document.getElementById("modal-title");
+const modalImg = document.getElementById("modal-img");
+const closeBtn = document.getElementById("close");
+const modalPairs = document.getElementById("modal-pairs");
+const resultInfo = document.getElementById("result-info");
+
+let currentType = "all";
+let keyword = "";
+
+function getTypeLabel(type) {
+  if (Array.isArray(type)) return type[0];
+  return type;
+}
+
+function renderCards(list) {
+  container.innerHTML = "";
+  resultInfo.textContent = `共 ${list.length} 項異常`;
+
+  if (list.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🔎</div><p>找不到符合條件的異常項目</p></div>`;
+    return;
+  }
+
+  list.forEach((d, i) => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.style.animationDelay = `${Math.min(i * 0.03, 0.5)}s`;
+    card.innerHTML = `
+      <img src="${d.img}" alt="${d.name}" loading="lazy" onerror="this.style.display='none'">
+      <div class="card-tag">${getTypeLabel(d.type)}</div>
+      <h3>${d.name}</h3>
+    `;
+    card.onclick = () => openModal(d);
+    container.appendChild(card);
+  });
+}
+
+function openModal(d) {
+  modalTitle.innerText = d.name;
+  modalImg.src = d.img;
+  modalImg.alt = d.name;
+
+  const solutionMap = {};
+  d.solution.forEach(text => {
+    const m = text.match(/^([A-Za-z])/);
+    if (!m) return;
+    const key = m[1];
+    if (!solutionMap[key]) solutionMap[key] = [];
+    solutionMap[key].push(text);
+  });
+
+  let html = "";
+  d.reason.forEach(r => {
+    const m = r.match(/^([A-Za-z])/);
+    const key = m ? m[1] : "";
+    const sols = solutionMap[key] || [];
+    html += `
+      <div class="modal-pair">
+        <div class="modal-pair-header">
+          <span class="cause-label">${key || '?'}</span>
+          <span>${r.replace(/^[A-Za-z]\./, '').trim()}</span>
+        </div>
+        ${sols.length ? `<ul class="modal-pair-solutions">${sols.map(s => `<li>${s}</li>`).join("")}</ul>` : ""}
+      </div>
+    `;
+  });
+
+  modalPairs.innerHTML = html;
+  modal.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+}
+
+function closeModal() {
+  modal.classList.add("hidden");
+  document.body.style.overflow = "";
+}
+
+modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+closeBtn.addEventListener("click", closeModal);
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+
+function applyFilter() {
+  const kw = keyword.trim().toLowerCase();
+  const list = defects.filter(d => {
+    let matchType = currentType === "all" ||
+      (Array.isArray(d.type) ? d.type.includes(currentType) : d.type === currentType);
+    const text = (d.name || "") + " " +
+      (Array.isArray(d.reason) ? d.reason.join(" ") : "") + " " +
+      (Array.isArray(d.solution) ? d.solution.join(" ") : "");
+    const matchKeyword = !kw || text.toLowerCase().includes(kw);
+    return matchType && matchKeyword;
+  });
+  renderCards(list);
+}
+
+document.querySelectorAll(".filter").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll(".filter").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentType = btn.dataset.type;
+    applyFilter();
+  };
+});
+
+const searchInput = document.getElementById("search-input");
+if (searchInput) {
+  searchInput.addEventListener("input", () => {
+    keyword = searchInput.value;
+    applyFilter();
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => { applyFilter(); });
+applyFilter();
+</script>
+</body>
+</html>

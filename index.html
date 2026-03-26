@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>品質異常快速查閱系統</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0a1628;
+      --navy-mid: #112240;
+      --navy-light: #1a3a5c;
+      --accent: #e8a020;
+      --accent-light: #f5bb4a;
+      --accent-dim: rgba(232, 160, 32, 0.15);
+      --white: #ffffff;
+      --gray-100: #f0f2f5;
+      --gray-200: #e2e6ec;
+      --gray-400: #8a98ab;
+      --gray-600: #4a5568;
+      --danger: #e05252;
+      --success: #38b28a;
+      --card-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      --card-hover-shadow: 0 12px 40px rgba(0,0,0,0.18);
+      --transition: 0.22s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+      background: var(--gray-100);
+      color: var(--navy);
+      min-height: 100vh;
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      background: var(--navy);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 1.5rem 0.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      gap: 1rem;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      min-width: 0;
+    }
+
+    .header-icon {
+      width: 42px;
+      height: 42px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .header-icon svg {
+      width: 24px;
+      height: 24px;
+      fill: var(--navy);
+    }
+
+    .header-titles h1 {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: var(--white);
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .header-titles h2 {
+      font-size: 0.72rem;
+      font-weight: 400;
+      color: var(--gray-400);
+      letter-spacing: 0.06em;
+      margin-top: 2px;
+    }
+
+    .header-badge {
+      background: var(--accent);
+      color: var(--navy);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.25rem 0.7rem;
+      border-radius: 99px;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .header-search {
+      padding: 0.65rem 1.5rem 0.8rem;
+    }
+
+    .search-wrap {
+      position: relative;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray-400);
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+    #searchInput {
+      width: 100%;
+      padding: 0.65rem 1rem 0.65rem 2.8rem;
+      border-radius: 8px;
+      border: 1.5px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.08);
+      color: var(--white);
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: border-color var(--transition), background var(--transition);
+      outline: none;
+    }
+
+    #searchInput::placeholder { color: var(--gray-400); }
+
+    #searchInput:focus {
+      border-color: var(--accent);
+      background: rgba(255,255,255,0.12);
+    }
+
+    /* ─── HERO STATS ─── */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      padding: 1.5rem 1.5rem 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-num {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--gray-600);
+      margin-top: 0.2rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* ─── MAIN CONTENT ─── */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 3rem;
+    }
+
+    .section-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--gray-400);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      padding-left: 0.2rem;
+    }
+
+    /* ─── GRID ─── */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 900px) {
+      .product-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 560px) {
+      .product-grid { grid-template-columns: 1fr; }
+      .stats-bar { gap: 1.2rem; }
+      .stat-num { font-size: 1.6rem; }
+      .header-titles h1 { font-size: 1.05rem; }
+    }
+
+    /* ─── PRODUCT CARD ─── */
+    .product-card {
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+      transition: transform var(--transition), box-shadow var(--transition);
+      display: flex;
+      flex-direction: column;
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--card-hover-shadow);
+      border-color: var(--accent);
+    }
+
+    .product-card.hidden { display: none; }
+
+    .card-header {
+      padding: 1.4rem 1.4rem 1rem;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .card-icon-wrap {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 1.6rem;
+    }
+
+    .card-count-badge {
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: 99px;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      margin-top: 0.2rem;
+    }
+
+    .card-body {
+      padding: 0 1.4rem 1.2rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--navy);
+      letter-spacing: 0.02em;
+      margin-bottom: 0.4rem;
+    }
+
+    .card-subtitle {
+      font-size: 0.72rem;
+      color: var(--gray-400);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.9rem;
+    }
+
+    .card-desc {
+      font-size: 0.82rem;
+      color: var(--gray-600);
+      line-height: 1.6;
+      flex: 1;
+    }
+
+    .card-footer {
+      padding: 1rem 1.4rem 1.3rem;
+      border-top: 1px solid var(--gray-200);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-tags {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      font-size: 0.65rem;
+      font-weight: 500;
+      background: var(--gray-100);
+      color: var(--gray-600);
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    .card-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+
+    .card-btn svg {
+      width: 14px;
+      height: 14px;
+      stroke: var(--accent);
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: transform var(--transition);
+    }
+
+    .product-card:hover .card-btn svg {
+      transform: translateX(3px);
+    }
+
+    /* ─── NO RESULTS ─── */
+    .no-results {
+      display: none;
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--gray-400);
+      grid-column: 1 / -1;
+    }
+
+    .no-results.show { display: block; }
+
+    .no-results-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+
+    .no-results p { font-size: 0.9rem; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.72rem;
+      color: var(--gray-400);
+      border-top: 1px solid var(--gray-200);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="header-left">
+      <div class="header-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="header-titles">
+        <h1>品質異常快速查閱系統</h1>
+        <h2>QA DEFECT QUICK REFERENCE SYSTEM</h2>
+      </div>
+    </div>
+    <div class="header-badge">6 產品線</div>
+  </div>
+  <div class="header-search">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="搜尋產品名稱 (例：塑膠蓋、瓶胚…)" autocomplete="off" />
+    </div>
+  </div>
+</header>
+
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-num">6</div>
+    <div class="stat-label">產品線</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">309</div>
+    <div class="stat-label">異常項目</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">309</div>
+    <div class="stat-label">圖片說明</div>
+  </div>
+</div>
+
+<main>
+  <div class="section-title">選擇產品查閱異常</div>
+
+  <div class="product-grid" id="productGrid">
+
+    <!-- 鋁蓋 -->
+    <a class="product-card" href="aluminum_cap/aluminum_cap.html"
+       data-name="鋁蓋 aluminum cap 金屬蓋">
+      <div class="card-header">
+        <div class="card-icon-wrap" style="background:#fff3e0;">🥫</div>
+        <div class="card-count-badge">79 項異常</div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">鋁蓋</div>
+        <div class="card-subtitle">ALUMINUM CAP</div>
+        <div class="card-desc">鋁蓋成型、外觀、結構、封口等各類異常圖文說明，含 TPE 內墊相關問題。</div>
+      </div>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="tag">成型</span>
+          <span class="tag">外觀</span>
+          <span class="tag">封口</span>
+        </div>
+        <div class="card-btn">
+          查閱
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+    </a>
+
+    <!-- 吹瓶 -->
+    <a class="product-card" href="bottle/bottle.html"
+       data-name="吹瓶 bottle 瓶子 PET瓶">
+      <div class="card-header">
+        <div class="card-icon-wrap" style="background:#e8f5e9;">🍶</div>
+        <div class="card-count-badge">30 項異常</div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">吹瓶</div>
+        <div class="card-subtitle">BLOW BOTTLE</div>
+        <div class="card-desc">PET 吹瓶製程異常，涵蓋瓶身、瓶口、容量、套標偏移等外觀與結構問題。</div>
+      </div>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="tag">瓶身</span>
+          <span class="tag">瓶口</span>
+          <span class="tag">套標</span>
+        </div>
+        <div class="card-btn">
+          查閱
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+    </a>
+
+    <!-- 爪蓋 -->
+    <a class="product-card" href="cap_metal/cap_metal.html"
+       data-name="爪蓋 cap metal 金屬爪蓋">
+      <div class="card-header">
+        <div class="card-icon-wrap" style="background:#fce4ec;">🔩</div>
+        <div class="card-count-badge">53 項異常</div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">爪蓋</div>
+        <div class="card-subtitle">METAL CAP</div>
+        <div class="card-desc">金屬爪蓋之成型不良、外觀瑕疵、密封與鎖固相關異常圖文查閱。</div>
+      </div>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="tag">成型</span>
+          <span class="tag">密封</span>
+          <span class="tag">外觀</span>
+        </div>
+        <div class="card-btn">
+          查閱
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+    </a>
+
+    <!-- 標籤 -->
+    <a class="product-card" href="label/label.html"
+       data-name="標籤 label 貼標 套標">
+      <div class="card-header">
+        <div class="card-icon-wrap" style="background:#e3f2fd;">🏷️</div>
+        <div class="card-count-badge">20 項異常</div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">標籤</div>
+        <div class="card-subtitle">LABEL</div>
+        <div class="card-desc">標籤印刷、貼標、套標偏移、氣泡、皺摺等外觀與貼合品質異常。</div>
+      </div>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="tag">印刷</span>
+          <span class="tag">貼合</span>
+          <span class="tag">外觀</span>
+        </div>
+        <div class="card-btn">
+          查閱
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+    </a>
+
+    <!-- 塑膠蓋 -->
+    <a class="product-card" href="plastic_cap/plastic_cap.html"
+       data-name="塑膠蓋 plastic cap PP蓋 PE蓋">
+      <div class="card-header">
+        <div class="card-icon-wrap" style="background:#f3e5f5;">🔵</div>
+        <div class="card-count-badge">72 項異常</div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">塑膠蓋</div>
+        <div class="card-subtitle">PLASTIC CAP</div>
+        <div class="card-desc">PP/PE 塑膠蓋射出成型、外觀缺陷、螺紋、防竄蓋等多類異常詳細圖解。</div>
+      </div>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="tag">射出</span>
+          <span class="tag">螺紋</span>
+          <span class="tag">防竄</span>
+        </div>
+        <div class="card-btn">
+          查閱
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+    </a>
+
+    <!-- 瓶胚 -->
+    <a class="product-card" href="preform_defect/preform_defect.html"
+       data-name="瓶胚 preform 預型體 胚管">
+      <div class="card-header">
+        <div class="card-icon-wrap" style="background:#e0f7fa;">🧪</div>
+        <div class="card-count-badge">55 項異常</div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">瓶胚</div>
+        <div class="card-subtitle">PREFORM</div>
+        <div class="card-desc">PET 瓶胚射出成型異常，包含結晶、氣泡、燒焦、縮水、異物等各類缺陷。</div>
+      </div>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="tag">結晶</span>
+          <span class="tag">氣泡</span>
+          <span class="tag">射出</span>
+        </div>
+        <div class="card-btn">
+          查閱
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+    </a>
+
+    <!-- No results -->
+    <div class="no-results" id="noResults">
+      <div class="no-results-icon">🔍</div>
+      <p>找不到符合「<span id="noResultsKeyword"></span>」的產品</p>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  品質異常快速查閱系統 &nbsp;|&nbsp; QA Defect Quick Reference &nbsp;|&nbsp; 6 產品線 · 309 項異常
+</footer>
+
+<script>
+  const searchInput = document.getElementById('searchInput');
+  const cards = document.querySelectorAll('.product-card');
+  const noResults = document.getElementById('noResults');
+  const noResultsKeyword = document.getElementById('noResultsKeyword');
+
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.trim().toLowerCase();
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+      const name = card.dataset.name.toLowerCase();
+      const text = card.innerText.toLowerCase();
+      if (!q || name.includes(q) || text.includes(q)) {
+        card.classList.remove('hidden');
+        visibleCount++;
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+
+    if (visibleCount === 0 && q) {
+      noResults.classList.add('show');
+      noResultsKeyword.textContent = searchInput.value.trim();
+    } else {
+      noResults.classList.remove('show');
+    }
+  });
+
+  // Allow pressing Enter/clicking card
+  cards.forEach(card => {
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter') card.click();
+    });
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('role', 'link');
+  });
+</script>
+
+</body>
+</html>
