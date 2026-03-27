@@ -1,172 +1,177 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>瓶口尺寸查詢</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #f0f4f8;
-  --white: #ffffff;
-  --navy: #0a1628;
-  --accent: #0e8a6e;
-  --accent-light: #e6f7f3;
-  --text: #1e293b;
-  --muted: #64748b;
-  --border: #e2e8f0;
-  --hover: #f8fafc;
-  --shadow: 0 2px 12px rgba(0,0,0,0.08);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.16);
-  --radius: 12px;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  :root {
+    --navy: #0a1628;
+    --navy-mid: #112240;
+    --navy-light: #1a3a5c;
+    --accent: #e8a020;
+    --accent-light: #f5bb4a;
+    --accent-dim: rgba(232,160,32,0.15);
+    --white: #ffffff;
+    --gray-100: #f0f2f5;
+    --gray-200: #e2e6ec;
+    --gray-400: #8a98ab;
+    --gray-600: #4a5568;
+    --card-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    --transition: 0.22s cubic-bezier(0.4,0,0.2,1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans TC','Microsoft JhengHei',sans-serif; background: var(--gray-100); color: var(--navy); min-height: 100vh; }
 
-/* ── Header ── */
-header {
-  background: var(--navy);
-  padding: 1rem 1.5rem;
-  display: flex; align-items: center; justify-content: space-between;
-  position: sticky; top: 0; z-index: 100;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
-}
-.header-left { display: flex; align-items: center; gap: 0.8rem; }
-.header-icon { width: 36px; height: 36px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-.header-icon svg { width: 20px; height: 20px; stroke: white; fill: none; }
-header h1 { font-size: 1.1rem; font-weight: 700; color: white; }
-.header-meta { font-size: 0.72rem; color: #94a3b8; }
-.home-btn { color: #94a3b8; text-decoration: none; font-size: 0.8rem; padding: 0.4rem 0.8rem; border: 1px solid #334155; border-radius: 6px; transition: all 0.2s; }
-.home-btn:hover { color: white; border-color: #64748b; }
+  /* ─── HEADER ─── */
+  header { background: var(--navy); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 24px rgba(0,0,0,0.3); }
+  .header-top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.9rem 1.5rem 0.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06); gap: 1rem;
+  }
+  .header-titles h1 { font-size: 1.35rem; font-weight: 900; color: var(--white); letter-spacing: 0.04em; }
+  .header-titles h1 a { color: inherit; text-decoration: none; }
+  .header-titles h2 { font-size: 0.72rem; font-weight: 400; color: var(--gray-400); letter-spacing: 0.06em; margin-top: 2px; }
+  .header-badge {
+    background: var(--accent); color: var(--navy);
+    font-size: 0.7rem; font-weight: 700;
+    padding: 0.25rem 0.7rem; border-radius: 99px;
+    letter-spacing: 0.05em; white-space: nowrap;
+  }
 
-/* ── Controls ── */
-.controls { background: white; border-bottom: 1px solid var(--border); padding: 1rem 1.5rem; display: flex; flex-direction: column; gap: 0.8rem; }
-.search-wrap { position: relative; max-width: 400px; }
-.search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; stroke: var(--muted); fill: none; }
-#searchInput {
-  width: 100%; padding: 0.6rem 0.8rem 0.6rem 2.4rem;
-  border: 1.5px solid var(--border); border-radius: 8px;
-  font-size: 0.9rem; color: var(--text); outline: none;
-  font-family: inherit; transition: border-color 0.2s;
-}
-#searchInput:focus { border-color: var(--accent); }
-#searchInput::placeholder { color: #94a3b8; }
+  /* ─── SEARCH ─── */
+  .header-search { padding: 0.6rem 1.5rem; }
+  .search-wrap { position: relative; max-width: 480px; margin: 0 auto; }
+  .search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--gray-400); font-size: 1rem; pointer-events: none; }
+  #search-input {
+    width: 100%; padding: 0.65rem 1rem 0.65rem 2.6rem;
+    font-size: 0.9rem; font-family: inherit;
+    border-radius: 999px; border: 1.5px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.07); color: var(--white); outline: none;
+    transition: border-color var(--transition), background var(--transition);
+  }
+  #search-input::placeholder { color: var(--gray-400); }
+  #search-input:focus { border-color: var(--accent); background: rgba(255,255,255,0.11); }
 
-.filter-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-.filter-btn {
-  padding: 0.35rem 0.9rem; border-radius: 99px;
-  border: 1.5px solid var(--border); background: white;
-  font-size: 0.8rem; font-weight: 500; color: var(--muted);
-  cursor: pointer; transition: all 0.15s; white-space: nowrap;
-  font-family: inherit;
-}
-.filter-btn:hover { border-color: var(--accent); color: var(--accent); }
-.filter-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+  /* ─── FILTER PILLS ─── */
+  .filter-scroll-wrap { overflow-x: auto; padding: 0.55rem 1rem 0.7rem; scrollbar-width: none; }
+  .filter-scroll-wrap::-webkit-scrollbar { display: none; }
+  #filters { display: flex; gap: 0.45rem; width: max-content; }
+  .filter {
+    padding: 0.38rem 0.9rem; font-size: 0.82rem; font-family: inherit; font-weight: 500;
+    border: 1.5px solid rgba(255,255,255,0.15); border-radius: 99px;
+    background: transparent; color: rgba(255,255,255,0.7);
+    cursor: pointer; white-space: nowrap; transition: all var(--transition); letter-spacing: 0.02em;
+  }
+  .filter:hover { background: rgba(255,255,255,0.1); color: var(--white); border-color: rgba(255,255,255,0.3); }
+  .filter.active { background: var(--accent); color: var(--navy); border-color: var(--accent); font-weight: 700; }
 
-/* ── Main ── */
-main { padding: 1.25rem 1.5rem 3rem; max-width: 1200px; margin: 0 auto; }
-.result-info { font-size: 0.78rem; color: var(--muted); margin-bottom: 1rem; }
+  /* ─── RESULT INFO ─── */
+  .result-info { padding: 0.7rem 1.5rem 0.2rem; font-size: 0.78rem; color: var(--gray-600); letter-spacing: 0.02em; }
 
-/* ── Category section ── */
-.cat-section { margin-bottom: 2rem; }
-.cat-title {
-  font-size: 0.78rem; font-weight: 700; color: var(--muted);
-  letter-spacing: 0.1em; text-transform: uppercase;
-  margin-bottom: 0.8rem; padding-left: 0.2rem;
-}
+  /* ─── CONTENT ─── */
+  #content { padding: 0.5rem 1rem 3rem; }
 
-/* ── Table wrapper ── */
-.table-wrap {
-  background: white; border-radius: var(--radius);
-  border: 1.5px solid var(--border); box-shadow: var(--shadow);
-  overflow: hidden;
-}
-.table-scroll { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; min-width: 640px; }
-thead tr { background: var(--navy); }
-thead th {
-  padding: 0.75rem 1rem; text-align: left;
-  font-size: 0.75rem; font-weight: 600; color: #94a3b8;
-  letter-spacing: 0.05em; white-space: nowrap;
-}
-thead th:first-child { color: white; min-width: 160px; }
-tbody tr { border-bottom: 1px solid var(--border); transition: background 0.12s; }
-tbody tr:last-child { border-bottom: none; }
-tbody tr:hover { background: var(--accent-light); }
-tbody td { padding: 0.7rem 1rem; font-size: 0.85rem; color: var(--text); white-space: nowrap; }
-tbody td:first-child { font-weight: 700; color: var(--text); min-width: 160px; }
-.val { color: var(--text); }
-.val-dash { color: #cbd5e1; }
-.highlight-row { background: #fafff9 !important; }
-.highlight-row td:first-child { color: var(--accent); }
+  .cat-block { margin-bottom: 1.75rem; animation: cardFadeIn 0.3s ease both; }
+  @keyframes cardFadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
 
-/* ── No result ── */
-.no-result { text-align: center; padding: 4rem 1rem; color: var(--muted); }
+  .cat-label {
+    font-size: 0.72rem; font-weight: 700; color: var(--gray-400);
+    letter-spacing: 0.12em; text-transform: uppercase;
+    margin-bottom: 0.6rem; padding-left: 0.3rem;
+  }
 
-/* ── Notice ── */
-.notice {
-  background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px;
-  padding: 0.8rem 1rem; font-size: 0.78rem; color: #92400e;
-  display: flex; gap: 0.5rem; align-items: flex-start; margin-bottom: 1.25rem;
-}
-.notice svg { width: 16px; height: 16px; stroke: #d97706; fill: none; flex-shrink: 0; margin-top: 1px; }
+  /* ─── TABLE ─── */
+  .table-wrap {
+    background: var(--white); border-radius: 12px;
+    box-shadow: var(--card-shadow); overflow: hidden;
+  }
+  .table-scroll { overflow-x: auto; }
+  .table-scroll::-webkit-scrollbar { height: 4px; }
+  .table-scroll::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 99px; }
 
-@media (max-width: 640px) {
-  header { padding: 0.8rem 1rem; }
-  .controls { padding: 0.8rem 1rem; }
-  main { padding: 1rem 0.75rem 3rem; }
-  thead th, tbody td { padding: 0.6rem 0.75rem; font-size: 0.78rem; }
-}
+  table { width: 100%; border-collapse: collapse; min-width: 700px; }
+  thead tr { background: var(--navy); }
+  thead th {
+    padding: 0.75rem 1rem; text-align: left;
+    font-size: 0.72rem; font-weight: 700; color: var(--gray-400);
+    letter-spacing: 0.06em; white-space: nowrap;
+  }
+  thead th:first-child { color: var(--white); min-width: 155px; }
+  tbody tr { border-bottom: 1px solid var(--gray-100); transition: background var(--transition); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #fffbf0; }
+  tbody td { padding: 0.7rem 1rem; font-size: 0.84rem; white-space: nowrap; }
+  tbody td:first-child { font-weight: 700; color: var(--navy); }
+  .val { color: var(--navy); font-weight: 500; }
+  .val-dash { color: var(--gray-200); }
+
+  /* ─── NOTICE ─── */
+  .notice {
+    margin: 0 1rem 1rem; padding: 0.7rem 1rem;
+    background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px;
+    font-size: 0.75rem; color: #92400e; display: flex; gap: 0.4rem;
+  }
+
+  /* ─── EMPTY ─── */
+  .empty-state { text-align: center; padding: 4rem 1rem; color: var(--gray-400); }
+  .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .empty-state p { font-size: 0.95rem; }
+
+  @media (max-width: 600px) {
+    .header-top { padding: 0.75rem 1rem 0.4rem; }
+    .header-titles h1 { font-size: 1.1rem; }
+    .header-search { padding: 0.5rem 1rem; }
+    .filter-scroll-wrap { padding: 0.45rem 0.8rem 0.6rem; }
+    #content { padding: 0.5rem 0.75rem 3rem; }
+    thead th, tbody td { padding: 0.6rem 0.75rem; font-size: 0.78rem; }
+  }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="header-left">
-    <div class="header-icon">
-      <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M8 3v3a2 2 0 01-2 2H3m18 0h-3a2 2 0 01-2-2V3m0 18v-3a2 2 0 012-2h3M3 16h3a2 2 0 012 2v3"/>
-      </svg>
+  <div class="header-top">
+    <div class="header-titles">
+      <h1><a href="../index.html">📏 瓶口尺寸查詢</a></h1>
+      <h2>BOTTLE MOUTH DIMENSIONS REFERENCE</h2>
     </div>
-    <div>
-      <h1>瓶口尺寸查詢</h1>
-      <div class="header-meta">最後更新：2025/10/17</div>
+    <span class="header-badge" id="total-badge">— 型號</span>
+  </div>
+  <div class="header-search">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="搜尋瓶型（如 1810、38mm、扣蓋…）" autocomplete="off">
     </div>
   </div>
-  <a href="index.html" class="home-btn">← 返回主頁</a>
+  <div class="filter-scroll-wrap">
+    <div id="filters"></div>
+  </div>
 </header>
 
-<div class="controls">
-  <div class="search-wrap">
-    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <input type="text" id="searchInput" placeholder="搜尋瓶型（如 1810、38mm、扣蓋…）" autocomplete="off">
-  </div>
-  <div class="filter-row" id="filterRow"></div>
+<div class="result-info" id="result-info"></div>
+
+<div class="notice">
+  ⚠️ 實際尺寸以規格單為主，如有疑問請洽蓋品課（達叔）
 </div>
 
-<main>
-  <div class="notice">
-    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-    實際尺寸以規格單為主，如有疑問請洽蓋品課（達叔）
-  </div>
-  <div class="result-info" id="resultInfo"></div>
-  <div id="content"></div>
-  <div class="no-result" id="noResult" style="display:none;">找不到符合的瓶型，請嘗試其他關鍵字</div>
-</main>
+<div id="content"></div>
 
 <script>
 const productsData = {
   "冷充瓶口": {
-    "1810瓶口":     { "瓶口內徑(I)": "21.74±0.13", "瓶口外徑(E)": "24.94±0.13", "螺牙外徑(T)": "27.43±0.13", "防盜環外徑(A)": "27.97±0.13", "防盜環高度(D)": "14.10±0.20", "支撐環高度(F)": "21.00±0.25", "支撐環外徑(Z)": "33.00±0.25" },
-    "1881瓶口":     { "瓶口內徑(I)": "21.74±0.13", "瓶口外徑(E)": "24.94±0.13", "螺牙外徑(T)": "27.40±0.13", "防盜環外徑(A)": "28.00±0.13", "防盜環高度(D)": "11.20±0.20", "支撐環高度(F)": "17.00±0.25", "支撐環外徑(Z)": "33.00±0.25" },
-    "3025瓶口":     { "瓶口內徑(I)": "25.10±0.13", "瓶口外徑(E)": "28.00±0.13", "螺牙外徑(T)": "30.00±0.13", "防盜環外徑(A)": "30.20±0.13", "防盜環高度(D)": "13.20±0.20", "支撐環高度(F)": "18.50±0.25", "支撐環外徑(Z)": "34.00±0.25" },
-    "2925瓶口":     { "瓶口內徑(I)": "25.10±0.13", "瓶口外徑(E)": "27.40±0.13", "螺牙外徑(T)": "29.40±0.13", "防盜環外徑(A)": "30.50±0.13", "防盜環高度(D)": "8.20±0.20",  "支撐環高度(F)": "12.60±0.20", "支撐環外徑(Z)": "34.00±0.25" },
-    "38mm瓶口":     { "瓶口內徑(I)": "32.26±0.15", "瓶口外徑(E)": "35.06±0.15", "螺牙外徑(T)": "37.20±0.15", "防盜環外徑(A)": "37.97±0.15", "防盜環高度(D)": "14.10±0.20", "支撐環高度(F)": "21.00±0.25", "支撐環外徑(Z)": "43.00±0.25" },
-    "TH-38mm瓶口":  { "瓶口內徑(I)": "31.80±0.15", "瓶口外徑(E)": "34.80±0.15", "螺牙外徑(T)": "37.19±0.15", "防盜環外徑(A)": "38.02±0.15", "防盜環高度(D)": "11.15±0.20", "支撐環高度(F)": "16.80±0.25", "支撐環外徑(Z)": "41.00±0.30" },
-    "45mm瓶口":     { "瓶口內徑(I)": "37.30±0.13", "瓶口外徑(E)": "41.20±0.13", "螺牙外徑(T)": "44.60±0.13", "防盜環外徑(A)": "45.70±0.13", "防盜環高度(D)": "15.60±0.20", "支撐環高度(F)": "23.00±0.25", "支撐環外徑(Z)": "49.00±0.30" },
-    "30mm扣蓋瓶口":  { "瓶口內徑(I)": "23.70±0.15", "瓶口外徑(E)": "28.00±0.15", "螺牙外徑(T)": "—",          "防盜環外徑(A)": "29.65±0.15", "防盜環高度(D)": "5.30±0.15",  "支撐環高度(F)": "13.70±0.20", "支撐環外徑(Z)": "32.50±0.20" },
-    "32mm扣蓋瓶口":  { "瓶口內徑(I)": "27.50±0.15", "瓶口外徑(E)": "30.10±0.15", "螺牙外徑(T)": "—",          "防盜環外徑(A)": "31.55±0.15", "防盜環高度(D)": "4.00±0.15",  "支撐環高度(F)": "11.00±0.20", "支撐環外徑(Z)": "37.00±0.20" },
-    "34mm扣蓋瓶口":  { "瓶口內徑(I)": "27.50±0.15", "瓶口外徑(E)": "30.00±0.15", "螺牙外徑(T)": "—",          "防盜環外徑(A)": "32.00±0.15", "防盜環高度(D)": "4.30±0.15",  "支撐環高度(F)": "10.30±0.25", "支撐環外徑(Z)": "37.00±0.20" }
+    "1810瓶口":    { "瓶口內徑(I)": "21.74±0.13", "瓶口外徑(E)": "24.94±0.13", "螺牙外徑(T)": "27.43±0.13", "防盜環外徑(A)": "27.97±0.13", "防盜環高度(D)": "14.10±0.20", "支撐環高度(F)": "21.00±0.25", "支撐環外徑(Z)": "33.00±0.25" },
+    "1881瓶口":    { "瓶口內徑(I)": "21.74±0.13", "瓶口外徑(E)": "24.94±0.13", "螺牙外徑(T)": "27.40±0.13", "防盜環外徑(A)": "28.00±0.13", "防盜環高度(D)": "11.20±0.20", "支撐環高度(F)": "17.00±0.25", "支撐環外徑(Z)": "33.00±0.25" },
+    "3025瓶口":    { "瓶口內徑(I)": "25.10±0.13", "瓶口外徑(E)": "28.00±0.13", "螺牙外徑(T)": "30.00±0.13", "防盜環外徑(A)": "30.20±0.13", "防盜環高度(D)": "13.20±0.20", "支撐環高度(F)": "18.50±0.25", "支撐環外徑(Z)": "34.00±0.25" },
+    "2925瓶口":    { "瓶口內徑(I)": "25.10±0.13", "瓶口外徑(E)": "27.40±0.13", "螺牙外徑(T)": "29.40±0.13", "防盜環外徑(A)": "30.50±0.13", "防盜環高度(D)": "8.20±0.20",  "支撐環高度(F)": "12.60±0.20", "支撐環外徑(Z)": "34.00±0.25" },
+    "38mm瓶口":    { "瓶口內徑(I)": "32.26±0.15", "瓶口外徑(E)": "35.06±0.15", "螺牙外徑(T)": "37.20±0.15", "防盜環外徑(A)": "37.97±0.15", "防盜環高度(D)": "14.10±0.20", "支撐環高度(F)": "21.00±0.25", "支撐環外徑(Z)": "43.00±0.25" },
+    "TH-38mm瓶口": { "瓶口內徑(I)": "31.80±0.15", "瓶口外徑(E)": "34.80±0.15", "螺牙外徑(T)": "37.19±0.15", "防盜環外徑(A)": "38.02±0.15", "防盜環高度(D)": "11.15±0.20", "支撐環高度(F)": "16.80±0.25", "支撐環外徑(Z)": "41.00±0.30" },
+    "45mm瓶口":    { "瓶口內徑(I)": "37.30±0.13", "瓶口外徑(E)": "41.20±0.13", "螺牙外徑(T)": "44.60±0.13", "防盜環外徑(A)": "45.70±0.13", "防盜環高度(D)": "15.60±0.20", "支撐環高度(F)": "23.00±0.25", "支撐環外徑(Z)": "49.00±0.30" },
+    "30mm扣蓋瓶口": { "瓶口內徑(I)": "23.70±0.15", "瓶口外徑(E)": "28.00±0.15", "螺牙外徑(T)": "—",          "防盜環外徑(A)": "29.65±0.15", "防盜環高度(D)": "5.30±0.15",  "支撐環高度(F)": "13.70±0.20", "支撐環外徑(Z)": "32.50±0.20" },
+    "32mm扣蓋瓶口": { "瓶口內徑(I)": "27.50±0.15", "瓶口外徑(E)": "30.10±0.15", "螺牙外徑(T)": "—",          "防盜環外徑(A)": "31.55±0.15", "防盜環高度(D)": "4.00±0.15",  "支撐環高度(F)": "11.00±0.20", "支撐環外徑(Z)": "37.00±0.20" },
+    "34mm扣蓋瓶口": { "瓶口內徑(I)": "27.50±0.15", "瓶口外徑(E)": "30.00±0.15", "螺牙外徑(T)": "—",          "防盜環外徑(A)": "32.00±0.15", "防盜環高度(D)": "4.30±0.15",  "支撐環高度(F)": "10.30±0.25", "支撐環外徑(Z)": "37.00±0.20" }
   },
   "熱充瓶口": {
     "1810 射出": { "瓶口內徑(I)": "21.00±0.13", "瓶口外徑(E)": "25.35±0.13", "螺牙外徑(T)": "27.86±0.13", "防盜環外徑(A)": "28.40±0.13", "防盜環高度(D)": "14.55±0.20", "支撐環高度(F)": "21.55±0.25", "支撐環外徑(Z)": "33.55±0.25" },
@@ -187,91 +192,76 @@ const productsData = {
 };
 
 const cols = ["瓶口內徑(I)", "瓶口外徑(E)", "螺牙外徑(T)", "防盜環外徑(A)", "防盜環高度(D)", "支撐環高度(F)", "支撐環外徑(Z)"];
-const colUnits = cols.map(c => `${c}\n(mm)`);
 const categories = Object.keys(productsData);
-
-let activeCategory = 'all';
-let searchTerm = '';
-
-// Build filter buttons
-const filterRow = document.getElementById('filterRow');
 const totalCount = categories.reduce((s, c) => s + Object.keys(productsData[c]).length, 0);
-const allBtn = document.createElement('button');
-allBtn.className = 'filter-btn active';
-allBtn.textContent = `全部 (${totalCount})`;
-allBtn.dataset.cat = 'all';
-allBtn.onclick = () => setFilter('all');
-filterRow.appendChild(allBtn);
+document.getElementById('total-badge').textContent = totalCount + ' 型號';
 
-for (const cat of categories) {
-  const count = Object.keys(productsData[cat]).length;
+// Filter pills
+const filtersEl = document.getElementById('filters');
+const makeFilter = (label, cat) => {
   const btn = document.createElement('button');
-  btn.className = 'filter-btn';
-  btn.textContent = `${cat} (${count})`;
+  btn.className = 'filter' + (cat === 'all' ? ' active' : '');
+  btn.textContent = label;
   btn.dataset.cat = cat;
   btn.onclick = () => setFilter(cat);
-  filterRow.appendChild(btn);
-}
+  filtersEl.appendChild(btn);
+};
+makeFilter(`全部 (${totalCount})`, 'all');
+for (const c of categories) makeFilter(`${c} (${Object.keys(productsData[c]).length})`, c);
+
+let activeCategory = 'all', searchTerm = '';
 
 function setFilter(cat) {
   activeCategory = cat;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+  document.querySelectorAll('.filter').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
   render();
 }
 
-document.getElementById('searchInput').addEventListener('input', e => {
+document.getElementById('search-input').addEventListener('input', e => {
   searchTerm = e.target.value.trim().toLowerCase();
   render();
 });
 
 function render() {
   const content = document.getElementById('content');
-  const noResult = document.getElementById('noResult');
-  const resultInfo = document.getElementById('resultInfo');
-
   const catsToShow = activeCategory === 'all' ? categories : [activeCategory];
   let totalShown = 0;
   let html = '';
 
   for (const cat of catsToShow) {
-    const models = productsData[cat];
-    const filtered = Object.entries(models).filter(([name]) =>
+    const filtered = Object.entries(productsData[cat]).filter(([name]) =>
       !searchTerm || name.toLowerCase().includes(searchTerm) || cat.toLowerCase().includes(searchTerm)
     );
-    if (filtered.length === 0) continue;
+    if (!filtered.length) continue;
     totalShown += filtered.length;
 
-    const headerCols = cols.map(c => `<th>${c}</th>`).join('');
+    const headerCells = cols.map(c => `<th>${c}<br><span style="font-weight:400;opacity:0.6;">(mm)</span></th>`).join('');
     const rows = filtered.map(([name, specs]) => {
       const cells = cols.map(c => {
         const v = specs[c] || '—';
-        const isDash = v === '—';
-        return `<td class="${isDash ? 'val-dash' : 'val'}">${v}</td>`;
+        return `<td class="${v === '—' ? 'val-dash' : 'val'}">${v}</td>`;
       }).join('');
       return `<tr><td>${name}</td>${cells}</tr>`;
     }).join('');
 
-    html += `
-      <div class="cat-section">
-        <div class="cat-title">${cat}</div>
-        <div class="table-wrap">
-          <div class="table-scroll">
-            <table>
-              <thead><tr><th>型號</th>${headerCols}</tr></thead>
-              <tbody>${rows}</tbody>
-            </table>
-          </div>
+    html += `<div class="cat-block">
+      <div class="cat-label">${cat}</div>
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>型號</th>${headerCells}</tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
         </div>
-      </div>`;
+      </div>
+    </div>`;
   }
 
-  resultInfo.textContent = `顯示 ${totalShown} / ${totalCount} 筆`;
+  document.getElementById('result-info').textContent = `顯示 ${totalShown} / ${totalCount} 筆`;
 
-  if (totalShown === 0) {
-    content.innerHTML = '';
-    noResult.style.display = 'block';
+  if (!totalShown) {
+    content.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><p>找不到「${searchTerm}」，請嘗試其他關鍵字</p></div>`;
   } else {
-    noResult.style.display = 'none';
     content.innerHTML = html;
   }
 }
