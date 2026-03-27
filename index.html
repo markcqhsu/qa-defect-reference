@@ -81,7 +81,20 @@
       padding: 0.2rem 0.6rem; border-radius: 99px;
       letter-spacing: 0.04em; white-space: nowrap;
       border: 1px solid rgba(255,255,255,0.15);
+      cursor: pointer; transition: color var(--transition), border-color var(--transition);
     }
+    .version-badge:hover { color: var(--accent); border-color: var(--accent); }
+    #version-panel {
+      background: var(--navy-mid); border-top: 1px solid rgba(255,255,255,0.06);
+      max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease;
+      padding: 0 1.5rem;
+    }
+    #version-panel.open { max-height: 300px; padding: 0.8rem 1.5rem; overflow-y: auto; }
+    .v-item { display: flex; gap: 1rem; padding: 0.45rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 0.78rem; }
+    .v-item:last-child { border-bottom: none; }
+    .v-date { color: var(--accent); font-weight: 700; white-space: nowrap; min-width: 88px; }
+    .v-content { color: rgba(255,255,255,0.75); flex: 1; }
+    .v-author { color: var(--gray-400); white-space: nowrap; }
     .header-search { padding: 0.65rem 1.5rem 0.8rem; }
     .search-wrap { position: relative; max-width: 540px; margin: 0 auto; }
     .search-icon {
@@ -276,9 +289,12 @@
       </div>
     </div>
     <div class="header-right">
-      <span class="version-badge">V1.2.0</span>
+      <span class="version-badge" onclick="toggleVersion()">V1.2.0</span>
       <div class="header-badge">8 查閱工具</div>
     </div>
+  </div>
+  <div id="version-panel">
+    <div id="version-list"></div>
   </div>
   <div class="header-search">
     <div class="search-wrap">
@@ -580,6 +596,19 @@ searchClear.addEventListener('click', () => {
   doSearch('');
   searchInput.focus();
 });
+
+// ─── Version log ───
+const versionHistory = [
+  { date: '2026/03/27', content: '系統正式上線。整合 6 條產品線異常查閱（鋁蓋、吹瓶、爪蓋、標籤、塑膠蓋、瓶胚）與 2 項尺寸規格工具（塑蓋尺寸、瓶口尺寸），共 8 個查閱工具。', author: 'Mark' },
+];
+
+document.getElementById('version-list').innerHTML = versionHistory.map(h =>
+  `<div class="v-item"><span class="v-date">${h.date}</span><span class="v-content">${h.content}</span><span class="v-author">${h.author}</span></div>`
+).join('');
+
+function toggleVersion() {
+  document.getElementById('version-panel').classList.toggle('open');
+}
 </script>
 
 </body>
