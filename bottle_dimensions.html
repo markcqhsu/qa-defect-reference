@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>瓶口尺寸表</title>
+    <style>
+body {
+    font-size: 18px;
+    line-height: 1.6;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 20px;
+    background: linear-gradient(to bottom, #f8f0e3, #e6dac5);
+    color: #5C4033;
+}
+
+button {
+    display: block;
+    width: 200px;
+    padding: 14px;
+    margin: 12px auto;
+    font-size: 19px;
+    cursor: pointer;
+    border: none;
+    background-color: #F5DEB3;
+    color: #5C4033;
+    font-weight: bold;
+    border: 2px solid #8B4513;
+    border-radius: 8px;
+    box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease-in-out;
+}
+
+button:hover {
+    background-color: #EED5B7;
+    border-color: #A0522D;
+    color: #3E2723;
+    transform: translateY(-2px);
+    box-shadow: 4px 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.hidden {
+    display: none;
+}
+
+table {
+    width: 70%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background-color: rgba(255, 228, 181, 0.9);
+    color: #444;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.15);
+    white-space: nowrap;
+}
+
+table, th, td {
+    border: 1px solid #A0522D;
+}
+
+th {
+    background: linear-gradient(135deg, #D2691E, #A0522D);
+    color: white;
+    padding: 12px;
+    font-size: 18px;
+}
+
+td {
+    padding: 14px;
+    font-size: 18px;
+}
+
+tr:nth-child(even) {
+    background-color: rgba(255, 239, 213, 0.6);
+}
+
+tr:hover {
+    background-color: #FFA07A;
+    transition: 0.3s;
+}
+
+.back-btn, .home-btn {
+    background: linear-gradient(135deg, #E3BA89, #C0966B);
+    color: #5C4033;
+    font-weight: bold;
+    padding: 12px;
+    width: 220px;
+    border-radius: 12px;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease-in-out;
+    border: none;
+}
+
+.back-btn:hover, .home-btn:hover {
+    background: linear-gradient(135deg, #D2A679, #A07552);
+    transform: translateY(-2px);
+    box-shadow: 4px 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+#date-btn {
+    font-size: 18px;
+    color: #555;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 20px;
+    padding: 10px;
+    border-top: 2px solid #ccc;
+    display: inline-block;
+    background: rgba(255, 239, 213, 0.7);
+    border-radius: 8px;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+    border: none;
+}
+
+.home-home-btn {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 35px;
+    height: 35px;
+    font-size: 18px;
+    background: #A0522D;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.home-home-btn:hover {
+    background: #D2691E;
+    transform: scale(1.1);
+}
+
+.back-back-btn {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    width: 40px;
+    height: 40px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-size: 24px;
+}
+
+.back-back-btn:hover {
+    transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+    button {
+        width: 70%;
+        margin: 15px auto;
+    }
+}
+
+@media (max-width: 768px) {
+    table {
+        width: 100%;
+        font-size: 18px;
+    }
+
+    th, td {
+        padding: 10px;
+        font-size: 18px;
+    }
+}
+    </style>
+  </head>
+  <body>
+    <h2>瓶口尺寸表</h2>
+    <button onclick="goBack()" class="back-back-btn">⬅️</button>
+
+    <!-- 第一層：產品類型 -->
+    <div id="product-menu">
+      <button onclick="showModels('冷充瓶口')">冷充瓶口</button>
+      <button onclick="showModels('熱充瓶口')">熱充瓶口</button>
+      <button onclick="showModels('醬油瓶口')">醬油瓶口</button>
+      <button onclick="showModels('日化瓶口')">日化瓶口</button>
+      <button id="date-btn" onclick="showMessage()">
+        📅最後更新日期: 2025/10/17(點我)
+      </button>
+    </div>
+
+    <!-- 第二層：選擇模號 -->
+    <div id="model-menu" class="hidden">
+      <h3 id="model-title"></h3>
+      <div id="model-buttons"></div>
+      <button onclick="goHome()" class="home-btn">回到首頁🏠</button>
+    </div>
+
+    <!-- 第三層：顯示產品資訊 -->
+    <div id="info" class="hidden">
+      <h3 id="info-title"></h3>
+      <table id="info-table"></table>
+      <div id="info-image"></div>
+      <button onclick="goBack()" class="back-btn">返回蓋型⬅️</button
+      ><button onclick="goHome()" class="home-btn">回到首頁🏠</button>
+    </div>
+
+    <script>
+let currentStep = "product-menu";
+
+const productsData = {
+  "冷充瓶口": {
+    "1810瓶口": { "瓶口內徑(I)": "21.74±0.13", "瓶口外徑(E)": "24.94±0.13", "螺牙外徑(T)": "27.43±0.13", "防盜環外徑(A)": "27.97±0.13", "防盜環高度(D)": "14.10±0.20", "支撐環高度(F)": "21.00±0.25", "支撐環外徑(Z)": "33.00±0.25" },
+    "1881瓶口": { "瓶口內徑(I)": "21.74±0.13", "瓶口外徑(E)": "24.94±0.13", "螺牙外徑(T)": "27.40±0.13", "防盜環外徑(A)": "28.00±0.13", "防盜環高度(D)": "11.20±0.20", "支撐環高度(F)": "17.00±0.25", "支撐環外徑(Z)": "33.00±0.25" },
+    "3025瓶口": { "瓶口內徑(I)": "25.10±0.13", "瓶口外徑(E)": "28.00±0.13", "螺牙外徑(T)": "30.00±0.13", "防盜環外徑(A)": "30.20±0.13", "防盜環高度(D)": "13.20±0.20", "支撐環高度(F)": "18.50±0.25", "支撐環外徑(Z)": "34.00±0.25" },
+    "2925瓶口": { "瓶口內徑(I)": "25.10±0.13", "瓶口外徑(E)": "27.40±0.13", "螺牙外徑(T)": "29.40±0.13", "防盜環外徑(A)": "30.50±0.13", "防盜環高度(D)": "8.20±0.20", "支撐環高度(F)": "12.60±0.20", "支撐環外徑(Z)": "34.00±0.25" },
+    "38mm瓶口": { "瓶口內徑(I)": "32.26±0.15", "瓶口外徑(E)": "35.06±0.15", "螺牙外徑(T)": "37.20±0.15", "防盜環外徑(A)": "37.97±0.15", "防盜環高度(D)": "14.10±0.20", "支撐環高度(F)": "21.00±0.25", "支撐環外徑(Z)": "43.00±0.25" },
+    "TH-38mm瓶口": { "瓶口內徑(I)": "31.80±0.15", "瓶口外徑(E)": "34.80±0.15", "螺牙外徑(T)": "37.19±0.15", "防盜環外徑(A)": "38.02±0.15", "防盜環高度(D)": "11.15±0.20", "支撐環高度(F)": "16.80±0.25", "支撐環外徑(Z)": "41.00±0.30" },
+    "45mm瓶口": { "瓶口內徑(I)": "37.30±0.13", "瓶口外徑(E)": "41.20±0.13", "螺牙外徑(T)": "44.60±0.13", "防盜環外徑(A)": "45.70±0.13", "防盜環高度(D)": "15.60±0.20", "支撐環高度(F)": "23.00±0.25", "支撐環外徑(Z)": "49.00±0.30" },
+    "30mm扣蓋瓶口": { "瓶口內徑(I)": "23.70±0.15", "瓶口外徑(E)": "28.00±0.15", "螺牙外徑(T)": "-", "防盜環外徑(A)": "29.65±0.15", "防盜環高度(D)": "5.30±0.15", "支撐環高度(F)": "13.70±0.20", "支撐環外徑(Z)": "32.50±0.20" },
+    "32mm扣蓋瓶口": { "瓶口內徑(I)": "27.50±0.15", "瓶口外徑(E)": "30.10±0.15", "螺牙外徑(T)": "-", "防盜環外徑(A)": "31.55±0.15", "防盜環高度(D)": "4.00±0.15", "支撐環高度(F)": "11.00±0.20", "支撐環外徑(Z)": "37.00±0.20" },
+    "34mm扣蓋瓶口": { "瓶口內徑(I)": "27.50±0.15", "瓶口外徑(E)": "30.00±0.15", "螺牙外徑(T)": "-", "防盜環外徑(A)": "32.00±0.15", "防盜環高度(D)": "4.30±0.15", "支撐環高度(F)": "10.30±0.25", "支撐環外徑(Z)": "37.00±0.20" },
+  },
+  "熱充瓶口": {
+    "1810射出": { "瓶口內徑(I)": "21.00±0.13", "瓶口外徑(E)": "25.35±0.13", "螺牙外徑(T)": "27.86±0.13", "防盜環外徑(A)": "28.40±0.13", "防盜環高度(D)": "14.55±0.20", "支撐環高度(F)": "21.55±0.25", "支撐環外徑(Z)": "33.55±0.25" },
+    "1810結晶": { "瓶口內徑(I)": "20.60±0.15", "瓶口外徑(E)": "24.94±0.15", "螺牙外徑(T)": "27.43±0.16", "防盜環外徑(A)": "27.97±0.16", "防盜環高度(D)": "14.10±0.20", "支撐環高度(F)": "21.00±0.25", "支撐環外徑(Z)": "33.00±0.25" },
+    "1881射出": { "瓶口內徑(I)": "22.22±0.13", "瓶口外徑(E)": "25.56±0.13", "螺牙外徑(T)": "27.76±0.13", "防盜環外徑(A)": "28.23±0.13", "防盜環高度(D)": "11.68±0.20", "支撐環高度(F)": "17.88±0.25", "支撐環外徑(Z)": "33.50±0.25" },
+    "1881結晶": { "瓶口內徑(I)": "21.74±0.15", "瓶口外徑(E)": "25.07±0.15", "螺牙外徑(T)": "27.40±0.16", "防盜環外徑(A)": "28.00±0.16", "防盜環高度(D)": "11.20±0.20", "支撐環高度(F)": "17.20±0.25", "支撐環外徑(Z)": "33.00±0.25" },
+    "38mm射出": { "瓶口內徑(I)": "30.60±0.13", "瓶口外徑(E)": "35.40±0.15", "螺牙外徑(T)": "37.70±0.18", "防盜環外徑(A)": "38.70±0.18", "防盜環高度(D)": "11.45±0.18", "支撐環高度(F)": "18.35±0.25", "支撐環外徑(Z)": "42.90±0.30" },
+    "38mm結晶": { "瓶口內徑(I)": "30.00±0.15", "瓶口外徑(E)": "34.80±0.17", "螺牙外徑(T)": "37.10±0.20", "防盜環外徑(A)": "38.00±0.20", "防盜環高度(D)": "11.20±0.20", "支撐環高度(F)": "18.20±0.25", "支撐環外徑(Z)": "42.00±0.30" },
+  },
+  "醬油瓶口": {
+    "Ø30mm瓶口": { "瓶口內徑(I)": "23.70±0.15", "瓶口外徑(E)": "28.00±0.15", "螺牙外徑(T)": "-", "防盜環外徑(A)": "29.65±0.15", "防盜環高度(D)": "5.30±0.15", "支撐環高度(F)": "13.70±0.20", "支撐環外徑(Z)": "32.50±0.20" },
+    "Ø32mm瓶口": { "瓶口內徑(I)": "27.50±0.15", "瓶口外徑(E)": "30.10±0.15", "螺牙外徑(T)": "-", "防盜環外徑(A)": "31.55±0.15", "防盜環高度(D)": "4.00±0.15", "支撐環高度(F)": "11.00±0.20", "支撐環外徑(Z)": "37.00±0.20" },
+    "Ø34mm瓶口": { "瓶口內徑(I)": "27.50±0.15", "瓶口外徑(E)": "30.00±0.15", "螺牙外徑(T)": "-", "防盜環外徑(A)": "32.00±0.15", "防盜環高度(D)": "4.30±0.15", "支撐環高度(F)": "10.30±0.20", "支撐環外徑(Z)": "34.00±0.20" },
+  },
+  "日化瓶口": {
+    "Ø32mm瓶口": { "瓶口內徑(I)": "25.00±0.15", "瓶口外徑(E)": "29.40±0.15", "螺牙外徑(T)": "31.60±0.15", "防盜環外徑(A)": "-", "防盜環高度(D)": "-", "支撐環高度(F)": "11.60±0.20", "支撐環外徑(Z)": "-" },
+  },
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("product-menu").classList.remove("hidden");
+  currentStep = "product-menu";
+});
+
+function showModels(productType) {
+  document.getElementById("product-menu").classList.add("hidden");
+  document.getElementById("model-menu").classList.remove("hidden");
+
+  document.getElementById("model-title").innerText = `選擇 ${productType} 的蓋型`;
+  const modelButtons = document.getElementById("model-buttons");
+  modelButtons.innerHTML = "";
+
+  const models = productsData[productType];
+  Object.keys(models).forEach((model) => {
+    let btn = document.createElement("button");
+    btn.innerText = model;
+    btn.onclick = function () {
+      showInfo(productType, model);
+    };
+    modelButtons.appendChild(btn);
+  });
+
+  currentStep = "model-menu";
+}
+
+function showInfo(productType, model) {
+  document.getElementById("model-menu").classList.add("hidden");
+  document.getElementById("info").classList.remove("hidden");
+
+  document.getElementById("info-title").innerText = `瓶型：${model} (類型：${productType})`;
+
+  const info = productsData[productType][model];
+  const table = document.getElementById("info-table");
+  table.innerHTML = "<tr><th>尺寸</th><th>標準(mm)</th></tr>";
+
+  Object.keys(info).forEach((key) => {
+    if (key !== "圖片") {
+      let row = document.createElement("tr");
+      row.innerHTML = `<td>${key}</td><td>${info[key]}</td>`;
+      table.appendChild(row);
+    }
+  });
+
+  const imageContainer = document.getElementById("info-image");
+  imageContainer.innerHTML = "";
+
+  if (info.圖片) {
+    let img = document.createElement("img");
+    img.src = info.圖片;
+    img.alt = model;
+    img.style.maxWidth = "200px";
+    img.style.marginTop = "10px";
+    imageContainer.appendChild(img);
+  }
+
+  currentStep = "info";
+}
+
+function goBack() {
+  if (currentStep === "info") {
+    document.getElementById("info").classList.add("hidden");
+    document.getElementById("model-menu").classList.remove("hidden");
+    currentStep = "model-menu";
+  } else if (currentStep === "model-menu") {
+    document.getElementById("model-menu").classList.add("hidden");
+    document.getElementById("product-menu").classList.remove("hidden");
+    currentStep = "product-menu";
+  }
+}
+
+function goHome() {
+  document.getElementById("info").classList.add("hidden");
+  document.getElementById("model-menu").classList.add("hidden");
+  document.getElementById("product-menu").classList.remove("hidden");
+  currentStep = "product-menu";
+}
+
+function showMessage() {
+  alert("實際尺寸以規格單為主\n尺寸更新；內容有誤通知達叔( ͡° ͜ʖ ͡°)");
+}
+    </script>
+  </body>
+</html>
