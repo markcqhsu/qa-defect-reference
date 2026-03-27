@@ -166,6 +166,13 @@
       padding: 0.2rem 0.6rem; border-radius: 99px;
       letter-spacing: 0.04em; white-space: nowrap; margin-top: 0.2rem;
     }
+    .card-type-badge {
+      font-size: 0.6rem; font-weight: 700; letter-spacing: 0.06em;
+      padding: 0.15rem 0.45rem; border-radius: 4px; white-space: nowrap;
+      margin-top: 0.2rem;
+    }
+    .type-defect { background: var(--accent-dim); color: var(--accent); }
+    .type-spec   { background: rgba(255,255,255,0.12); color: var(--gray-400); border: 1px solid var(--gray-200); }
     .card-body { padding: 0 1.4rem 1.2rem; flex: 1; display: flex; flex-direction: column; }
     .card-title { font-size: 1.2rem; font-weight: 900; color: var(--navy); letter-spacing: 0.02em; margin-bottom: 0.4rem; }
     .card-subtitle { font-size: 0.72rem; color: var(--gray-400); letter-spacing: 0.05em; margin-bottom: 0.9rem; }
@@ -269,8 +276,8 @@
       </div>
     </div>
     <div class="header-right">
-      <span class="version-badge">V1.0.0</span>
-      <div class="header-badge">6 產品線</div>
+      <span class="version-badge">V1.2.0</span>
+      <div class="header-badge">8 查閱工具</div>
     </div>
   </div>
   <div class="header-search">
@@ -284,8 +291,8 @@
 
 <div class="stats-bar">
   <div class="stat-item">
-    <div class="stat-num">6</div>
-    <div class="stat-label">產品線</div>
+    <div class="stat-num">8</div>
+    <div class="stat-label">查閱工具</div>
   </div>
   <div class="stat-item">
     <div class="stat-num">309</div>
@@ -295,26 +302,52 @@
     <div class="stat-num">309</div>
     <div class="stat-label">圖片說明</div>
   </div>
+  <div class="stat-item">
+    <div class="stat-num">72+</div>
+    <div class="stat-label">尺寸規格</div>
+  </div>
 </div>
 
 <main>
   <!-- Product grid view -->
   <div id="gridView">
-    <div class="section-title">選擇產品查閱異常</div>
+    <div class="section-title">全部查閱工具</div>
     <div class="product-grid">
 
-      <a class="product-card" href="aluminum_cap/aluminum_cap.html">
+      <a class="product-card" href="plastic_cap/plastic_cap.html">
         <div class="card-header">
-          <div class="card-icon-wrap" style="background:#fff3e0;">🥫</div>
-          <div class="card-count-badge">79 項異常</div>
+          <div class="card-icon-wrap" style="background:#f3e5f5;">🔵</div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.3rem;">
+            <div class="card-count-badge">72 項異常</div>
+            <span class="card-type-badge type-defect">異常查閱</span>
+          </div>
         </div>
         <div class="card-body">
-          <div class="card-title">鋁蓋</div>
-          <div class="card-subtitle">ALUMINUM CAP</div>
-          <div class="card-desc">鋁蓋成型、外觀、結構、封口等各類異常圖文說明，含 TPE 內墊相關問題。</div>
+          <div class="card-title">塑膠蓋</div>
+          <div class="card-subtitle">PLASTIC CAP</div>
+          <div class="card-desc">PP/PE 塑膠蓋射出成型、外觀缺陷、螺紋、防竄蓋等多類異常詳細圖解。</div>
         </div>
         <div class="card-footer">
-          <div class="card-tags"><span class="tag">成型</span><span class="tag">外觀</span><span class="tag">封口</span></div>
+          <div class="card-tags"><span class="tag">射出</span><span class="tag">螺紋</span><span class="tag">防竄</span></div>
+          <div class="card-btn">查閱 <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>
+      </a>
+
+      <a class="product-card" href="cap_dimensions.html">
+        <div class="card-header">
+          <div class="card-icon-wrap" style="background:#f0f2f5;">📐</div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.3rem;">
+            <div class="card-count-badge">50+ 型號</div>
+            <span class="card-type-badge type-spec">尺寸規格</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">塑蓋尺寸</div>
+          <div class="card-subtitle">PLASTIC CAP DIMENSIONS</div>
+          <div class="card-desc">塑蓋各型號尺寸規格查詢，涵蓋重量、外徑、高度、厚度、螺牙尺寸、架橋拉力等完整數據。</div>
+        </div>
+        <div class="card-footer">
+          <div class="card-tags"><span class="tag">1810</span><span class="tag">1881</span><span class="tag">3025</span></div>
           <div class="card-btn">查閱 <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
         </div>
       </a>
@@ -322,7 +355,10 @@
       <a class="product-card" href="bottle/bottle.html">
         <div class="card-header">
           <div class="card-icon-wrap" style="background:#e8f5e9;">🍶</div>
-          <div class="card-count-badge">30 項異常</div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.3rem;">
+            <div class="card-count-badge">30 項異常</div>
+            <span class="card-type-badge type-defect">異常查閱</span>
+          </div>
         </div>
         <div class="card-body">
           <div class="card-title">吹瓶</div>
@@ -335,10 +371,51 @@
         </div>
       </a>
 
+      <a class="product-card" href="bottle_dimensions.html">
+        <div class="card-header">
+          <div class="card-icon-wrap" style="background:#f0f2f5;">📏</div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.3rem;">
+            <div class="card-count-badge">22 型號</div>
+            <span class="card-type-badge type-spec">尺寸規格</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">瓶口尺寸</div>
+          <div class="card-subtitle">BOTTLE MOUTH DIMENSIONS</div>
+          <div class="card-desc">冷充、熱充、醬油、日化瓶口尺寸查詢，包含瓶口內外徑、螺牙外徑、防盜環、支撐環等規格。</div>
+        </div>
+        <div class="card-footer">
+          <div class="card-tags"><span class="tag">冷充</span><span class="tag">熱充</span><span class="tag">醬油</span></div>
+          <div class="card-btn">查閱 <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>
+      </a>
+
+      <a class="product-card" href="aluminum_cap/aluminum_cap.html">
+        <div class="card-header">
+          <div class="card-icon-wrap" style="background:#fff3e0;">🥫</div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.3rem;">
+            <div class="card-count-badge">79 項異常</div>
+            <span class="card-type-badge type-defect">異常查閱</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">鋁蓋</div>
+          <div class="card-subtitle">ALUMINUM CAP</div>
+          <div class="card-desc">鋁蓋成型、外觀、結構、封口等各類異常圖文說明，含 TPE 內墊相關問題。</div>
+        </div>
+        <div class="card-footer">
+          <div class="card-tags"><span class="tag">成型</span><span class="tag">外觀</span><span class="tag">封口</span></div>
+          <div class="card-btn">查閱 <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>
+      </a>
+
       <a class="product-card" href="cap_metal/cap_metal.html">
         <div class="card-header">
           <div class="card-icon-wrap" style="background:#fce4ec;">🔩</div>
-          <div class="card-count-badge">53 項異常</div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.3rem;">
+            <div class="card-count-badge">53 項異常</div>
+            <span class="card-type-badge type-defect">異常查閱</span>
+          </div>
         </div>
         <div class="card-body">
           <div class="card-title">爪蓋</div>
@@ -354,7 +431,10 @@
       <a class="product-card" href="label/label.html">
         <div class="card-header">
           <div class="card-icon-wrap" style="background:#e3f2fd;">🏷️</div>
-          <div class="card-count-badge">20 項異常</div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.3rem;">
+            <div class="card-count-badge">20 項異常</div>
+            <span class="card-type-badge type-defect">異常查閱</span>
+          </div>
         </div>
         <div class="card-body">
           <div class="card-title">標籤</div>
@@ -367,26 +447,13 @@
         </div>
       </a>
 
-      <a class="product-card" href="plastic_cap/plastic_cap.html">
-        <div class="card-header">
-          <div class="card-icon-wrap" style="background:#f3e5f5;">🔵</div>
-          <div class="card-count-badge">72 項異常</div>
-        </div>
-        <div class="card-body">
-          <div class="card-title">塑膠蓋</div>
-          <div class="card-subtitle">PLASTIC CAP</div>
-          <div class="card-desc">PP/PE 塑膠蓋射出成型、外觀缺陷、螺紋、防竄蓋等多類異常詳細圖解。</div>
-        </div>
-        <div class="card-footer">
-          <div class="card-tags"><span class="tag">射出</span><span class="tag">螺紋</span><span class="tag">防竄</span></div>
-          <div class="card-btn">查閱 <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
-        </div>
-      </a>
-
       <a class="product-card" href="preform_defect/preform_defect.html">
         <div class="card-header">
           <div class="card-icon-wrap" style="background:#e0f7fa;">🧪</div>
-          <div class="card-count-badge">55 項異常</div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.3rem;">
+            <div class="card-count-badge">55 項異常</div>
+            <span class="card-type-badge type-defect">異常查閱</span>
+          </div>
         </div>
         <div class="card-body">
           <div class="card-title">瓶胚</div>
@@ -395,46 +462,6 @@
         </div>
         <div class="card-footer">
           <div class="card-tags"><span class="tag">結晶</span><span class="tag">氣泡</span><span class="tag">射出</span></div>
-          <div class="card-btn">查閱 <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
-        </div>
-      </a>
-
-    </div>
-  </div>
-
-  <!-- Spec reference section -->
-  <div id="specSection">
-    <div class="section-title" style="margin-top:2rem;">尺寸規格查詢</div>
-    <div class="product-grid">
-
-      <a class="product-card" href="cap_dimensions.html">
-        <div class="card-header">
-          <div class="card-icon-wrap" style="background:#f3e5f5;">🔵</div>
-          <div class="card-count-badge">50+ 型號</div>
-        </div>
-        <div class="card-body">
-          <div class="card-title">塑蓋尺寸</div>
-          <div class="card-subtitle">PLASTIC CAP DIMENSIONS</div>
-          <div class="card-desc">塑蓋各型號尺寸規格查詢，涵蓋重量、外徑、高度、厚度、螺牙尺寸、架橋拉力等完整數據。</div>
-        </div>
-        <div class="card-footer">
-          <div class="card-tags"><span class="tag">1810</span><span class="tag">1881</span><span class="tag">3025</span></div>
-          <div class="card-btn">查閱 <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
-        </div>
-      </a>
-
-      <a class="product-card" href="bottle_dimensions.html">
-        <div class="card-header">
-          <div class="card-icon-wrap" style="background:#e8f5e9;">🟢</div>
-          <div class="card-count-badge">22 型號</div>
-        </div>
-        <div class="card-body">
-          <div class="card-title">瓶口尺寸</div>
-          <div class="card-subtitle">BOTTLE MOUTH DIMENSIONS</div>
-          <div class="card-desc">冷充、熱充、醬油、日化瓶口尺寸查詢，包含瓶口內外徑、螺牙外徑、防盜環、支撐環等規格。</div>
-        </div>
-        <div class="card-footer">
-          <div class="card-tags"><span class="tag">冷充</span><span class="tag">熱充</span><span class="tag">醬油</span></div>
           <div class="card-btn">查閱 <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
         </div>
       </a>
@@ -451,7 +478,7 @@
 </main>
 
 <footer>
-  品質異常快速查閱系統 &nbsp;|&nbsp; QA Defect Quick Reference &nbsp;|&nbsp; 6 產品線 · 309 項異常 · 2 尺寸規格表 &nbsp;|&nbsp; V1.1.0
+  品質異常快速查閱系統 &nbsp;|&nbsp; QA Defect Quick Reference &nbsp;|&nbsp; 8 查閱工具 · 309 項異常 · 72+ 尺寸規格 &nbsp;|&nbsp; V1.2.0
 </footer>
 
 <script>
